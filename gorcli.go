@@ -9,6 +9,18 @@ import (
 	"strings"
 )
 
+type GorRequest struct {
+	Method string `json:"method"`
+	Path   string `json:"path"`
+	Body   Body   `json:"body"`
+}
+
+type Body map[string]interface{}
+
+type Config struct {
+	Headers map[string]string `json:"headers"`
+}
+
 func main() {
 	config, err := loadConfig()
 	if err != nil {
@@ -70,14 +82,6 @@ func main() {
 	fmt.Println(string(prettyJSON))
 }
 
-type GorRequest struct {
-	Method string `json:"method"`
-	Path   string `json:"path"`
-	Body   Body   `json:"body"`
-}
-
-type Body map[string]interface{}
-
 func loadRequest(name string) (*GorRequest, error) {
 	var request GorRequest
 
@@ -95,39 +99,6 @@ func loadRequest(name string) (*GorRequest, error) {
 	}
 
 	return &request, nil
-}
-
-type Config struct {
-	Headers map[string]string `json:"headers"`
-}
-
-func loadConfig() (*Config, error) {
-	var config Config
-
-	configPath := "./gorcli.json"
-	configExists := FileExists(configPath)
-
-	if configExists {
-		content, err := os.ReadFile("./gorcli.config.json")
-		if err != nil {
-			fmt.Println("Failed to load config file:", err)
-			return nil, err
-		}
-
-		err = json.Unmarshal(content, &config)
-		if err != nil {
-			fmt.Println("Failed to load config file:", err)
-			return nil, err
-		}
-
-		return &config, nil
-	}
-
-	config = Config{
-		Headers: map[string]string{},
-	}
-
-	return &config, nil
 }
 
 func buildRequest(name string) (*http.Request, error) {
@@ -159,6 +130,35 @@ func buildRequest(name string) (*http.Request, error) {
 	}
 
 	return request, nil
+}
+
+func loadConfig() (*Config, error) {
+	var config Config
+
+	configPath := "./gorcli.json"
+	configExists := FileExists(configPath)
+
+	if configExists {
+		content, err := os.ReadFile("./gorcli.config.json")
+		if err != nil {
+			fmt.Println("Failed to load config file:", err)
+			return nil, err
+		}
+
+		err = json.Unmarshal(content, &config)
+		if err != nil {
+			fmt.Println("Failed to load config file:", err)
+			return nil, err
+		}
+
+		return &config, nil
+	}
+
+	config = Config{
+		Headers: map[string]string{},
+	}
+
+	return &config, nil
 }
 
 func buildBody(body Body) (*strings.Reader, error) {
