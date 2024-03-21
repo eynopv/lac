@@ -37,7 +37,7 @@ func main() {
 	}
 
 	for key, value := range config.Headers {
-		fmt.Printf("Setting Header %s = %s", key, value)
+		fmt.Printf("Setting Header %s = %s\n", key, value)
 		request.Header.Set(key, value)
 	}
 
@@ -59,13 +59,13 @@ func main() {
 		return
 	}
 
+	prettyHeaders, err := json.MarshalIndent(res.Header, "", " ")
+	fmt.Println(string(prettyHeaders))
+
 	if len(body) == 0 {
 		fmt.Println("Response body is empty")
 		return
 	}
-
-	prettyHeaders, err := json.MarshalIndent(res.Header, "", " ")
-	fmt.Println(string(prettyHeaders))
 
 	var responseData map[string]interface{}
 	err = json.Unmarshal(body, &responseData)
@@ -135,7 +135,7 @@ func buildRequest(name string) (*http.Request, error) {
 func loadConfig() (*Config, error) {
 	var config Config
 
-	configPath := "./gorcli.json"
+	configPath := "./gorcli.config.json"
 	configExists := FileExists(configPath)
 
 	if configExists {
