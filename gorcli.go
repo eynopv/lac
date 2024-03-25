@@ -47,6 +47,7 @@ func main() {
 	}
 
 	for key, value := range config.Headers {
+		fmt.Println("Have header", key, value)
 		request.Header.Set(key, value)
 	}
 
@@ -179,6 +180,10 @@ func loadConfig() (*Config, error) {
 			return nil, err
 		}
 
+		for key, value := range config.Headers {
+			config.Headers[key] = parseParameter(value)
+		}
+
 		return &config, nil
 	}
 
@@ -195,4 +200,12 @@ func buildBody(body Body) (*strings.Reader, error) {
 		return nil, err
 	}
 	return strings.NewReader(string(bodyBytes)), nil
+}
+
+func parseParameter(value string) string {
+	if strings.HasPrefix(value, "$env") {
+		parts := strings.Split(value, ".")
+		return os.Getenv(strings.Join(parts[1:], "."))
+	}
+	return value
 }
