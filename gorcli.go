@@ -104,15 +104,20 @@ func loadRequest(name string) (*GorRequest, error) {
 	var request GorRequest
 
 	filePath := fmt.Sprintf("./collections/%s.json", name)
-	content, err := os.ReadFile(filePath)
+	fullPath, err := FullPath(filePath)
 	if err != nil {
-		fmt.Printf("Failed to load file %s: %v", filePath, err)
+		fmt.Printf("Failed to load file %s: %v\n", *fullPath, err)
+		return nil, err
+	}
+	content, err := os.ReadFile(*fullPath)
+	if err != nil {
+		fmt.Printf("Failed to load file %s: %v\n", *fullPath, err)
 		return nil, err
 	}
 
 	err = json.Unmarshal(content, &request)
 	if err != nil {
-		fmt.Printf("Failed to load file %s: %v", filePath, err)
+		fmt.Printf("Failed to load file %s: %v\n", *fullPath, err)
 		return nil, err
 	}
 
@@ -154,7 +159,12 @@ func loadConfig() (*Config, error) {
 	var config Config
 
 	configPath := "./gorcli.config.json"
-	configExists := FileExists(configPath)
+	filePath, err := FullPath(configPath)
+	if err != nil {
+		fmt.Println("Failed to load config file:", err)
+		return nil, err
+	}
+	configExists := FileExists(*filePath)
 
 	if configExists {
 		content, err := os.ReadFile("./gorcli.config.json")
