@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 type GorRequest struct {
@@ -27,8 +28,6 @@ func main() {
 		return
 	}
 
-	fmt.Println(config.Headers)
-
 	requestName := os.Args[1]
 	request, err := buildRequest(requestName)
 	if err != nil {
@@ -37,12 +36,13 @@ func main() {
 	}
 
 	for key, value := range config.Headers {
-		fmt.Printf("Setting Header %s = %s\n", key, value)
 		request.Header.Set(key, value)
 	}
 
+	start := time.Now()
 	client := http.Client{}
 	res, err := client.Do(request)
+	elapsed := time.Since(start)
 
 	if err != nil {
 		fmt.Println("Error sending request:", err)
@@ -52,6 +52,7 @@ func main() {
 	defer res.Body.Close()
 
 	fmt.Println("Status:", res.Status)
+	fmt.Println("Elapsed Time:", elapsed)
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
