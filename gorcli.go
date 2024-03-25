@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -23,12 +24,22 @@ type Config struct {
 }
 
 func main() {
+	showHeaders := flag.Bool("sh", false, "Show response headers")
+	flag.Parse()
+
+	args := flag.Args()
+
+	if len(args) < 1 {
+		fmt.Println("Usage: gorcli <request> [flags]")
+		os.Exit(1)
+	}
+
 	config, err := loadConfig()
 	if err != nil {
 		return
 	}
 
-	requestName := os.Args[1]
+	requestName := args[0]
 	request, err := buildRequest(requestName)
 	if err != nil {
 		fmt.Println("Unable to make request:", err)
@@ -60,8 +71,14 @@ func main() {
 		return
 	}
 
-	prettyHeaders, err := json.MarshalIndent(res.Header, "", " ")
-	fmt.Println(string(prettyHeaders))
+	if *showHeaders {
+		prettyHeaders, err := json.MarshalIndent(res.Header, "", " ")
+		if err != nil {
+			fmt.Println("Failed to parse headers", err)
+			return
+		}
+		fmt.Println(string(prettyHeaders))
+	}
 
 	if len(body) == 0 {
 		fmt.Println("Response body is empty")
