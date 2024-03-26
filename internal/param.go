@@ -2,7 +2,7 @@ package internal
 
 import (
 	"os"
-	"strings"
+	"regexp"
 )
 
 type Param struct {
@@ -11,9 +11,17 @@ type Param struct {
 }
 
 func (p Param) ParseValue() string {
-	if strings.HasPrefix(p.Value, "$env") {
-		parts := strings.Split(p.Value, ".")
-		return os.Getenv(strings.Join(parts[1:], "."))
-	}
-	return p.Value
+	re := regexp.MustCompile(`\${([^}]+)}`)
+
+	replaced := re.ReplaceAllStringFunc(p.Value, func(match string) string {
+		placeholder := match[2 : len(match)-1]
+
+		if value, ok := os.LookupEnv(placeholder); ok {
+			return value
+		}
+
+		return match
+	})
+
+	return replaced
 }

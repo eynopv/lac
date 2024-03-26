@@ -23,14 +23,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	internal.LoadDotEnv()
+
 	config, err := internal.LoadConfig()
 	if err != nil {
 		fmt.Println("Unable to load config")
 		os.Exit(1)
 	}
-
-	fmt.Println("Loaded config", config.Loaded)
-	fmt.Println("Config headers", config.Headers["x-api-key"])
 
 	requestName := args[0]
 	request, err := internal.NewRequest(requestName)
