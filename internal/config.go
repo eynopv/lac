@@ -7,8 +7,8 @@ import (
 )
 
 type Config struct {
-	Loaded  bool
-	Headers map[string]string `json:"headers"`
+	Headers   map[string]string `json:"headers"`
+	Variables map[string]string `json:"variables"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -35,6 +35,7 @@ func LoadConfig() (*Config, error) {
 			return nil, err
 		}
 
+		// TODO: headers could use variables so maybe params should be parsed right before request
 		for key, value := range config.Headers {
 			param := Param{Name: key, Value: value}
 			config.Headers[key] = param.ParseValue()
@@ -44,7 +45,8 @@ func LoadConfig() (*Config, error) {
 	}
 
 	config = Config{
-		Headers: map[string]string{},
+		Headers:   map[string]string{},
+		Variables: map[string]string{},
 	}
 
 	return &config, nil

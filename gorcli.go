@@ -13,6 +13,8 @@ import (
 )
 
 func main() {
+	context := internal.GetContext()
+
 	showHeaders := flag.Bool("sh", false, "Show response headers")
 	flag.Parse()
 
@@ -30,6 +32,7 @@ func main() {
 		fmt.Println("Unable to load config")
 		os.Exit(1)
 	}
+	context.Config = config
 
 	requestName := args[0]
 	request, err := internal.NewRequest(requestName)
