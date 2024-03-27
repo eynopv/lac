@@ -11,10 +11,20 @@ type Param struct {
 }
 
 func (p Param) ParseValue() string {
+	return ParseStringParam(p.Value)
+}
+
+func ParseStringParam(p string) string {
 	re := regexp.MustCompile(`\${([^}]+)}`)
 
-	replaced := re.ReplaceAllStringFunc(p.Value, func(match string) string {
+	config := GetContext().Config
+
+	replaced := re.ReplaceAllStringFunc(p, func(match string) string {
 		placeholder := match[2 : len(match)-1]
+
+		if value, ok := config.Variables[placeholder]; ok {
+			return value
+		}
 
 		if value, ok := os.LookupEnv(placeholder); ok {
 			return value

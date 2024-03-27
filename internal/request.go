@@ -49,9 +49,9 @@ func NewRequest(name string) (*http.Request, error) {
 	var request *http.Request
 	if len(requestData.Body) != 0 {
 		bodyReader := bytes.NewReader(requestData.Body)
-		request, err = http.NewRequest(requestData.Method, requestData.Path, bodyReader)
+		request, err = http.NewRequest(requestData.Method, ParseStringParam(requestData.Path), bodyReader)
 	} else {
-		request, err = http.NewRequest(requestData.Method, requestData.Path, nil)
+		request, err = http.NewRequest(requestData.Method, ParseStringParam(requestData.Path), nil)
 	}
 
 	if err != nil {
