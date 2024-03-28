@@ -1,3 +1,5 @@
-collections/
+.env
+.env.*
+
+.gorcli/
 gorcli.config.json
-.env*
