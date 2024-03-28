@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io"
-	"net/http"
+	"maps"
 	"os"
-	"time"
+	"strings"
 
 	"github.com/eynopv/gorcli/internal"
+	"github.com/eynopv/gorcli/internal/utils"
 )
 
 func main() {
-	context := internal.GetContext()
+	isGorcliDirectoryOrFail()
 
 	showHeaders := flag.Bool("sh", false, "Show response headers")
 	flag.Parse()
@@ -32,65 +32,122 @@ func main() {
 		fmt.Println("Unable to load config")
 		os.Exit(1)
 	}
-	context.Config = config
+
+	if *showHeaders {
+		config.ShowHeaders = *showHeaders
+	}
 
 	requestName := args[0]
-	request, err := internal.NewRequest(requestName)
+
+	if strings.HasPrefix(requestName, "tests/") {
+		runTestFlow(requestName, config)
+		return
+	}
+
+	request, err := internal.NewRequest(requestName, config.Headers, config.Variables)
 	if err != nil {
 		fmt.Println("Unable to make request:", err)
 		return
 	}
 
-	for key, value := range config.Headers {
-		request.Header.Set(key, value)
-	}
-
-	start := time.Now()
-	client := http.Client{}
-	res, err := client.Do(request)
-	elapsed := time.Since(start)
-
+	result, err := internal.DoRequest(request)
 	if err != nil {
 		fmt.Println("Error sending request:", err)
 		return
 	}
 
-	defer res.Body.Close()
+	fmt.Println("Status:", result.Status)
+	fmt.Println("Elapsed Time:", result.ElapsedTime)
 
-	fmt.Println("Status:", res.Status)
-	fmt.Println("Elapsed Time:", elapsed)
+	if config.ShowHeaders {
+		utils.PrintPrettyJson(result.Headers)
+	}
 
-	body, err := io.ReadAll(res.Body)
+	if result.Body != nil {
+		utils.PrintPrettyJson(result.Body)
+	}
+}
+
+type TestFlow []struct {
+	Id     string                `json:"id"`
+	Uses   string                `json:"uses"`
+	With   map[string]string     `json:"with"`
+	Expect *internal.Expectation `json:"expect"`
+}
+
+func runTestFlow(name string, config *internal.Config) {
+	filePath := fmt.Sprintf("./.gorcli/%s.json", name)
+	testFlowContent := utils.LoadFile(filePath)
+
+	if testFlowContent == nil {
+		os.Exit(1)
+	}
+
+	var testFlow TestFlow
+	err := json.Unmarshal(*testFlowContent, &testFlow)
+
 	if err != nil {
-		fmt.Println("Failed to read resonse body:", err)
+		fmt.Printf("Failed to parse test flow %s: %v\n", name, err)
 		return
 	}
 
-	if *showHeaders {
-		prettyHeaders, err := json.MarshalIndent(res.Header, "", " ")
+	variables := make(map[string]string)
+
+	for _, item := range testFlow {
+		requestVariables := make(map[string]string)
+		maps.Copy(requestVariables, config.Variables)
+
+		if item.With != nil {
+			withVars := make(map[string]string)
+			for key, value := range item.With {
+				withVars[key] = internal.ParseStringParam(value, variables)
+			}
+			maps.Copy(requestVariables, withVars)
+		}
+
+		request, err := internal.NewRequest(item.Uses, config.Headers, requestVariables)
 		if err != nil {
-			fmt.Println("Failed to parse headers", err)
+			fmt.Println("Unable to make request:", err)
 			return
 		}
-		fmt.Println(string(prettyHeaders))
-	}
 
-	if len(body) == 0 {
-		fmt.Println("Response body is empty")
-		return
-	}
+		result, err := internal.DoRequest(request)
+		if err != nil {
+			fmt.Println("Error sending request:", err)
+			return
+		}
 
-	var responseData map[string]interface{}
-	err = json.Unmarshal(body, &responseData)
-	if err != nil {
-		fmt.Println("Failed to parse JSON:", err)
-	}
+		if item.Expect != nil {
+			err := item.Expect.Check(result)
+			if err != nil {
+				fmt.Println(err.Error())
+				utils.PrintPrettyJson(result.Body)
+				os.Exit(1)
+			}
+		}
 
-	prettyJSON, err := json.MarshalIndent(responseData, "", "  ")
-	if err != nil {
-		fmt.Println("Failed to marshal JSON:", err)
-		return
-	}
+		fmt.Println("Status:", result.Status)
+		fmt.Println("Elapsed Time:", result.ElapsedTime)
 
-	fmt.Println(string(prettyJSON))
+		if config.ShowHeaders {
+			utils.PrintPrettyJson(result.Headers)
+		}
+
+		if result.Body != nil {
+			utils.PrintPrettyJson(result.Body)
+		}
+
+		if item.Id != "" {
+			maps.Copy(variables, utils.FlattenMap(result.Body, item.Id))
+		}
+	}
+}
+
+func isGorcliDirectoryOrFail() {
+	fullPath, _ := utils.FullPath("./.gorcli")
+	isGorcliDirectory := utils.FileExists(fullPath)
+	if isGorcliDirectory != true {
+		fmt.Println("Not a gorcli directory")
+		os.Exit(1)
+	}
 }

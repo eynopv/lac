@@ -3,33 +3,23 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
-	"os"
+
+	"github.com/eynopv/gorcli/internal/utils"
 )
 
 type Config struct {
-	Headers   map[string]string `json:"headers"`
-	Variables map[string]string `json:"variables"`
+	ShowHeaders bool              `json:"showHeaders"`
+	Headers     map[string]string `json:"headers"`
+	Variables   map[string]string `json:"variables"`
 }
 
 func LoadConfig() (*Config, error) {
 	var config Config
 
 	configPath := "./gorcli.config.json"
-	filePath, err := FullPath(configPath)
-	if err != nil {
-		fmt.Println("Failed to load config file:", err)
-		return nil, err
-	}
-	configExists := FileExists(*filePath)
 
-	if configExists {
-		content, err := os.ReadFile("./gorcli.config.json")
-		if err != nil {
-			fmt.Println("Failed to load config file:", err)
-			return nil, err
-		}
-
-		err = json.Unmarshal(content, &config)
+	if content := utils.LoadFile(configPath); content != nil {
+		err := json.Unmarshal(*content, &config)
 		if err != nil {
 			fmt.Println("Failed to load config file:", err)
 			return nil, err
