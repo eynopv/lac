@@ -59,12 +59,12 @@ func NewRequest(
 		return nil, err
 	}
 
-	requestData.Path = ParseStringParam(requestData.Path, variables)
+	requestData.Path = ParseParam(requestData.Path, variables)
 
 	var request *http.Request
 
 	if len(requestData.Body) != 0 {
-		stringBody := ParseStringParam(string(requestData.Body), variables)
+		stringBody := ParseParam(string(requestData.Body), variables)
 		bodyReader := strings.NewReader(stringBody)
 		request, err = http.NewRequest(requestData.Method, requestData.Path, bodyReader)
 	} else {
@@ -86,7 +86,7 @@ func NewRequest(
 	}
 
 	for key, value := range finalHeaders {
-		request.Header.Set(key, value)
+		request.Header.Set(key, ParseParam(value, variables))
 	}
 
 	return request, nil

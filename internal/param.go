@@ -10,11 +10,7 @@ type Param struct {
 	Value string
 }
 
-func (p Param) ParseValue() string {
-	return ParseStringParam(p.Value, nil)
-}
-
-func ParseStringParam(p string, replacements map[string]string) string {
+func ParseParam(p string, replacements map[string]string) string {
 	re := regexp.MustCompile(`\${([^}]+)}`)
 
 	replaced := re.ReplaceAllStringFunc(p, func(match string) string {
