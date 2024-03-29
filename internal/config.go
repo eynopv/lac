@@ -25,12 +25,6 @@ func LoadConfig() (*Config, error) {
 			return nil, err
 		}
 
-		// TODO: headers could use variables so maybe params should be parsed right before request
-		for key, value := range config.Headers {
-			param := Param{Name: key, Value: value}
-			config.Headers[key] = param.ParseValue()
-		}
-
 		return &config, nil
 	}
 

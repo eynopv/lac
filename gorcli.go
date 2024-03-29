@@ -100,7 +100,7 @@ func runTestFlow(name string, config *internal.Config) {
 		if item.With != nil {
 			withVars := make(map[string]string)
 			for key, value := range item.With {
-				withVars[key] = internal.ParseStringParam(value, variables)
+				withVars[key] = internal.ParseParam(value, variables)
 			}
 			maps.Copy(requestVariables, withVars)
 		}
