@@ -28,6 +28,19 @@ type Result struct {
 	Headers     http.Header
 }
 
+func (r *Result) Print(showHeaders bool) {
+	fmt.Println("Status:", r.Status)
+	fmt.Println("Elapsed Time:", r.ElapsedTime)
+
+	if showHeaders {
+		utils.PrintPrettyJson(r.Headers)
+	}
+
+	if r.Body != nil {
+		utils.PrintPrettyJson(r.Body)
+	}
+}
+
 func LoadRequest(name string) (*Request, error) {
 	var request Request
 
