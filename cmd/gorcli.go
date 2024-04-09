@@ -32,25 +32,26 @@ func main() {
 
 	var err error
 
-	if len(os.Args) >= 2 {
-		if os.Args[1] == "run" {
-			err = run.ExecuteRunCmd()
-		} else if os.Args[1] == "test" {
-			err = test.ExecuteTestCmd()
-		}
-		if err != nil {
-			handleError(err.Error())
-			return
-		}
+	if len(os.Args) < 2 || (os.Args[1] != "run" && os.Args[1] != "test") {
+		flag.Usage()
+		return
 	}
 
-	flag.Usage()
+	if os.Args[1] == "run" {
+		err = run.ExecuteRunCmd()
+	} else if os.Args[1] == "test" {
+		err = test.ExecuteTestCmd()
+	}
+
+	if err != nil {
+		handleError(err.Error())
+	}
 }
 
 func isGorcliDirectoryOrFail() {
 	fullPath, _ := utils.FullPath("./.gorcli")
 	isGorcliDirectory := utils.FileExists(fullPath)
-	if isGorcliDirectory != true {
+	if !isGorcliDirectory {
 		handleError("Not a gorcli directory")
 	}
 }

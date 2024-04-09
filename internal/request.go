@@ -2,7 +2,6 @@ package internal
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"maps"
@@ -14,10 +13,10 @@ import (
 )
 
 type Request struct {
-	Method  string `json:"method"`
-	Path    string `json:"path"`
+	Method  string `json:"method" yaml:"method"`
+	Path    string `json:"path" yaml:"path"`
 	Body    json.RawMessage
-	Headers map[string]string `json:"headers"`
+	Headers map[string]string `json:"headers" yaml:"headers"`
 }
 
 type Result struct {
@@ -44,14 +43,9 @@ func (r *Result) Print(showHeaders bool) {
 func LoadRequest(name string) (*Request, error) {
 	var request Request
 
-	filePath := fmt.Sprintf("./.gorcli/collections/%s.json", name)
-	content := utils.LoadFile(filePath)
+	itemPath := fmt.Sprintf("./.gorcli/collections/%s", name)
+	err := utils.LoadItem(itemPath, &request)
 
-	if content == nil {
-		return nil, errors.New("Failed to load request")
-	}
-
-	err := json.Unmarshal(*content, &request)
 	if err != nil {
 		fmt.Printf("Failed to parse request %s: %v\n", name, err)
 		return nil, err

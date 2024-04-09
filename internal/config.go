@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	ShowHeaders bool              `json:"showHeaders"`
-	Headers     map[string]string `json:"headers"`
-	Variables   map[string]string `json:"variables"`
+	ShowHeaders bool              `json:"showHeaders" yaml:"showHeaders"`
+	Headers     map[string]string `json:"headers" yaml:"headers"`
+	Variables   map[string]string `json:"variables" yaml:"variables"`
 }
 
 func LoadConfig() (*Config, error) {

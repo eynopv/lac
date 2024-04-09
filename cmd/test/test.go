@@ -1,7 +1,6 @@
 package test
 
 import (
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -13,10 +12,10 @@ import (
 )
 
 type TestFlow []struct {
-	Id     string                `json:"id"`
-	Uses   string                `json:"uses"`
-	With   map[string]string     `json:"with"`
-	Expect *internal.Expectation `json:"expect"`
+	Id     string                `json:"id" yaml:"id"`
+	Uses   string                `json:"uses" yaml:"uses"`
+	With   map[string]string     `json:"with" yaml:"with"`
+	Expect *internal.Expectation `json:"expect" yaml:"expect"`
 }
 
 func ExecuteTestCmd() error {
@@ -41,15 +40,9 @@ func ExecuteTestCmd() error {
 
 	testName := args[0]
 
-	filePath := fmt.Sprintf("./.gorcli/tests/%s.json", testName)
-	testFlowContent := utils.LoadFile(filePath)
-
-	if testFlowContent == nil {
-		return errors.New(fmt.Sprintf("Unable to make test: %v\n", err))
-	}
-
 	var testFlow TestFlow
-	err = json.Unmarshal(*testFlowContent, &testFlow)
+	filePath := fmt.Sprintf("./.gorcli/tests/%s", testName)
+	err = utils.LoadItem(filePath, &testFlow)
 
 	if err != nil {
 		return errors.New(fmt.Sprintf("Failed to parse test %s: %v\n", testName, err))
