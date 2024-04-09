@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"maps"
 	"os"
+	"path/filepath"
 
 	"github.com/eynopv/gorcli/internal"
 	"github.com/eynopv/gorcli/internal/utils"
@@ -38,14 +39,12 @@ func ExecuteTestCmd() error {
 		os.Exit(0)
 	}
 
-	testName := args[0]
-
 	var testFlow TestFlow
-	filePath := fmt.Sprintf("./.gorcli/tests/%s", testName)
-	err = utils.LoadItem(filePath, &testFlow)
+	testPath := args[0]
+	err = utils.LoadItem(testPath, &testFlow)
 
 	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to parse test %s: %v\n", testName, err))
+		return errors.New(fmt.Sprintf("Failed to parse test %s: %v\n", testPath, err))
 	}
 
 	variables := make(map[string]string)
@@ -62,7 +61,8 @@ func ExecuteTestCmd() error {
 			maps.Copy(requestVariables, withVars)
 		}
 
-		request, err := internal.NewRequest(item.Uses, config.Headers, requestVariables)
+		usesPath := filepath.Join(filepath.Dir(testPath), item.Uses)
+		request, err := internal.NewRequest(usesPath, config.Headers, requestVariables)
 		if err != nil {
 			return errors.New(fmt.Sprintf("Unable to make request: %v\n", err))
 		}

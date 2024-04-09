@@ -40,14 +40,13 @@ func (r *Result) Print(showHeaders bool) {
 	}
 }
 
-func LoadRequest(name string) (*Request, error) {
+func LoadRequest(itemPath string) (*Request, error) {
 	var request Request
 
-	itemPath := fmt.Sprintf("./.gorcli/collections/%s", name)
 	err := utils.LoadItem(itemPath, &request)
 
 	if err != nil {
-		fmt.Printf("Failed to parse request %s: %v\n", name, err)
+		fmt.Printf("Failed to parse request %s: %v\n", itemPath, err)
 		return nil, err
 	}
 

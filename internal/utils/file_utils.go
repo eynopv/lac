@@ -3,28 +3,33 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
 
 func LoadItem(item string, dst interface{}) error {
 	var data *[]byte
-	data = LoadFile(fmt.Sprintf("%s.json", item))
-	if data != nil {
-		err := json.Unmarshal(*data, dst)
-		return err
+
+	if strings.HasSuffix(item, ".json") {
+		data = LoadFile(item)
+		if data != nil {
+			err := json.Unmarshal(*data, dst)
+			return err
+		}
 	}
 
-	data = LoadFile(fmt.Sprintf("%s.yaml", item))
-	if data != nil {
-		err := yaml.Unmarshal(*data, dst)
-		return err
+	if strings.HasSuffix(item, ".yaml") || strings.HasSuffix(item, ".yml") {
+		data = LoadFile(item)
+		if data != nil {
+			err := yaml.Unmarshal(*data, dst)
+			return err
+		}
 	}
 
-	return errors.New("Not found")
+	return errors.New("Not supported file format")
 }
 
 func LoadFile(file string) *[]byte {
