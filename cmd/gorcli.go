@@ -7,7 +7,6 @@ import (
 
 	"github.com/eynopv/gorcli/cmd/run"
 	"github.com/eynopv/gorcli/cmd/test"
-	"github.com/eynopv/gorcli/internal/utils"
 )
 
 var version string
@@ -28,8 +27,6 @@ func main() {
 		return
 	}
 
-	isGorcliDirectoryOrFail()
-
 	var err error
 
 	if len(os.Args) < 2 || (os.Args[1] != "run" && os.Args[1] != "test") {
@@ -45,14 +42,6 @@ func main() {
 
 	if err != nil {
 		handleError(err.Error())
-	}
-}
-
-func isGorcliDirectoryOrFail() {
-	fullPath, _ := utils.FullPath("./.gorcli")
-	isGorcliDirectory := utils.FileExists(fullPath)
-	if !isGorcliDirectory {
-		handleError("Not a gorcli directory")
 	}
 }
 
