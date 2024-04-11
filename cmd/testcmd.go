@@ -1,8 +1,6 @@
-package test
+package cmd
 
 import (
-	"errors"
-	"flag"
 	"fmt"
 	"maps"
 	"os"
@@ -10,7 +8,21 @@ import (
 
 	"github.com/eynopv/gorcli/internal"
 	"github.com/eynopv/gorcli/internal/utils"
+	"github.com/spf13/cobra"
 )
+
+func init() {
+	rootCmd.AddCommand(testCmd)
+}
+
+var testCmd = &cobra.Command{
+	Use:   "test",
+	Short: "Execute test",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		testCommandFunction(args, Variables, Headers)
+	},
+}
 
 type TestFlow []struct {
 	Id     string                `json:"id" yaml:"id"`
@@ -19,39 +31,20 @@ type TestFlow []struct {
 	Expect *internal.Expectation `json:"expect" yaml:"expect"`
 }
 
-func ExecuteTestCmd() error {
-	cmd := flag.NewFlagSet("test", flag.ExitOnError)
-	cmd.Usage = printUsage
-
-	cmd.Parse(os.Args[2:])
-
-	args := cmd.Args()
-
-	internal.LoadDotEnv()
-
-	config, err := internal.LoadConfig()
-	if err != nil {
-		return err
-	}
-
-	if len(args) < 1 {
-		cmd.Usage()
-		os.Exit(0)
-	}
-
+func testCommandFunction(args []string, variables map[string]string, headers map[string]string) {
 	var testFlow TestFlow
 	testPath := args[0]
-	err = utils.LoadItem(testPath, &testFlow)
 
-	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to parse test %s: %v\n", testPath, err))
+	if err := utils.LoadItem(testPath, &testFlow); err != nil {
+		fmt.Printf("Unable to make test: %v\n", err)
+		os.Exit(1)
 	}
 
-	variables := make(map[string]string)
+	newVariables := make(map[string]string)
 
 	for _, item := range testFlow {
 		requestVariables := make(map[string]string)
-		maps.Copy(requestVariables, config.Variables)
+		maps.Copy(requestVariables, variables)
 
 		if item.With != nil {
 			withVars := make(map[string]string)
@@ -62,34 +55,31 @@ func ExecuteTestCmd() error {
 		}
 
 		usesPath := filepath.Join(filepath.Dir(testPath), item.Uses)
-		request, err := internal.NewRequest(usesPath, config.Headers, requestVariables)
+		request, err := internal.NewRequest(usesPath, headers, requestVariables)
 		if err != nil {
-			return errors.New(fmt.Sprintf("Unable to make request: %v\n", err))
+			fmt.Printf("Unable to make request: %v\n", err)
+			os.Exit(1)
 		}
 
 		result, err := internal.DoRequest(request)
 		if err != nil {
-			return errors.New(fmt.Sprintf("Error sending request: %v\n", err))
+			fmt.Printf("Unable to send request: %v\n", err)
+			os.Exit(1)
 		}
 
 		if item.Expect != nil {
 			err := item.Expect.Check(result)
 			if err != nil {
 				utils.PrintPrettyJson(result.Body)
-				return errors.New(err.Error())
+				fmt.Println(err)
+				os.Exit(1)
 			}
 		}
 
-		result.Print(config.ShowHeaders)
+		result.Print(Verbose)
 
 		if item.Id != "" {
-			maps.Copy(variables, utils.FlattenMap(result.Body, item.Id))
+			maps.Copy(newVariables, utils.FlattenMap(result.Body, item.Id))
 		}
 	}
-
-	return nil
-}
-
-func printUsage() {
-	fmt.Println(fmt.Sprintf("Usage: %s test [flags] <test name>", os.Args[0]))
 }
