@@ -34,6 +34,7 @@ var (
 	Verbose           bool
 	Variables         map[string]string
 	Headers           map[string]string
+	Timeout           int
 )
 
 func Execute() error {
@@ -44,4 +45,5 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringVar(&VariablesFilePath, "vars", "", "variables file path")
 	rootCmd.PersistentFlags().StringVar(&HeadersFilePath, "headers", "", "headers file path")
+	rootCmd.PersistentFlags().IntVarP(&Timeout, "timeout", "t", 15, "request timeout")
 }
