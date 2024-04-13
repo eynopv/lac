@@ -112,3 +112,7 @@ gorcli run getPet.json --vars variables.json --headers headers.json
   }
 ]
 ```
+
+```sh
+gorcli test createAndGetPet.json --headers headers.json --vars variables.json
+```
