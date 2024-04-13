@@ -9,7 +9,7 @@ import (
 var (
 	rootCmd = &cobra.Command{
 		Use:     "gorcli",
-		Version: "0.1.1",
+		Version: "0.2.1",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			internal.LoadDotEnv()
 
