@@ -18,6 +18,8 @@ go install github.com/eynopv/gorcli@latest
 gorcli [command]
 ```
 
+Read [manual](docs/Manual.md)
+
 ## License
 
 This project is licensed under the BSD 3-Clause License.
