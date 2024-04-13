@@ -6,7 +6,7 @@
 
 Create request:
 
-```json
+```javascript
 // createPet.json
 
 {
@@ -33,7 +33,7 @@ gorcli run createPet.json
 
 `gorcli` can use paased variables and preload `.env`
 
-```json
+```javascript
 // variables.json
 
 {
@@ -49,7 +49,7 @@ API_KEY=mysecretkey
 
 To use variables in request, write it surrounded by `${` and `}`.
 
-```json
+```javascript
 // getPet.json
 
 {
@@ -71,7 +71,7 @@ gorcli run getPet.json --vars variables.json
 
 `gorcli` can use passed headers and headers can contain variables.
 
-```json
+```javascript
 // headers.json
 
 {
@@ -88,7 +88,7 @@ gorcli run getPet.json --vars variables.json --headers headers.json
 
 ## Tests
 
-```json
+```javascript
 // createAndGetPet.json
 
 [
