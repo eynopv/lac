@@ -5,24 +5,26 @@
 ## Requests
 
 Create request:
+
 ```json
 // createPet.json
 
 {
-    "method": "POST",
-    "path": "https://api.example.com/v1/pet",
-    "headers": {
-        "Content-Type": "application/json"
-    },
-    "body": {
-        "name": "Princess",
-        "type": "dog",
-        "breed": "bulldog"
-    }
+  "method": "POST",
+  "path": "https://api.example.com/v1/pet",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "name": "Princess",
+    "type": "dog",
+    "breed": "bulldog"
+  }
 }
 ```
 
 Send request:
+
 ```sh
 gorcli run createPet.json
 ```
@@ -31,14 +33,12 @@ gorcli run createPet.json
 
 `gorcli` can use paased variables and preload `.env`
 
-
 ```json
 // variables.json
 
 {
-    "petId": "id-1"
+  "petId": "id-1"
 }
-
 ```
 
 ```sh
@@ -53,11 +53,11 @@ To use variables in request, write it surrounded by `${` and `}`.
 // getPet.json
 
 {
-    "method": "GET",
-    "path": "https://api.example.com/v1/pet/${petId}",
-    "headers": {
-        "x-api-key": "${API_KEY}"
-    }
+  "method": "GET",
+  "path": "https://api.example.com/v1/pet/${petId}",
+  "headers": {
+    "x-api-key": "${API_KEY}"
+  }
 }
 ```
 
@@ -72,9 +72,11 @@ gorcli run getPet.json --vars variables.json
 `gorcli` can use passed headers and headers can contain variables.
 
 ```json
+// headers.json
+
 {
-    "Content-Type": "application/json",
-    "x-api-key": "${API_KEY}"
+  "Content-Type": "application/json",
+  "x-api-key": "${API_KEY}"
 }
 ```
 
