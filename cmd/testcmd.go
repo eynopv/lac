@@ -20,7 +20,7 @@ var testCmd = &cobra.Command{
 	Short: "Execute test",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		testCommandFunction(args, Variables, Headers)
+		testCommandFunction(args, Variables, Headers, Timeout)
 	},
 }
 
@@ -31,7 +31,12 @@ type TestFlow []struct {
 	Expect *internal.Expectation `json:"expect" yaml:"expect"`
 }
 
-func testCommandFunction(args []string, variables map[string]string, headers map[string]string) {
+func testCommandFunction(
+	args []string,
+	variables map[string]string,
+	headers map[string]string,
+	timeout int,
+) {
 	var testFlow TestFlow
 	testPath := args[0]
 
@@ -61,7 +66,7 @@ func testCommandFunction(args []string, variables map[string]string, headers map
 			os.Exit(1)
 		}
 
-		result, err := internal.DoRequest(request)
+		result, err := internal.DoRequest(request, timeout)
 		if err != nil {
 			fmt.Printf("Unable to send request: %v\n", err)
 			os.Exit(1)

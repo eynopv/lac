@@ -98,16 +98,15 @@ func NewRequest(
 	return request, nil
 }
 
-func DoRequest(request *http.Request) (*Result, error) {
+func DoRequest(request *http.Request, timeout int) (*Result, error) {
 	result := Result{}
 
 	start := time.Now()
-	client := http.Client{}
+	client := http.Client{Timeout: time.Duration(timeout) * time.Second}
 	res, err := client.Do(request)
 	elapsed := time.Since(start)
 
 	if err != nil {
-		fmt.Println("Error sending request:", err)
 		return nil, err
 	}
 
@@ -121,7 +120,6 @@ func DoRequest(request *http.Request) (*Result, error) {
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println("Failed to read resonse body:", err)
 		return nil, err
 	}
 
