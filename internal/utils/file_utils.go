@@ -11,61 +11,71 @@ import (
 )
 
 func LoadItem(item string, dst interface{}) error {
-	var data *[]byte
-
 	if strings.HasSuffix(item, ".json") {
-		data = LoadFile(item)
-		if data != nil {
-			err := json.Unmarshal(*data, dst)
-			return err
-		}
+		return LoadAndParseJsonFile(item, dst)
 	}
-
 	if strings.HasSuffix(item, ".yaml") || strings.HasSuffix(item, ".yml") {
-		data = LoadFile(item)
-		if data != nil {
-			err := yaml.Unmarshal(*data, dst)
-			return err
-		}
+		return LoadAndParseYamlFile(item, dst)
 	}
-
 	return errors.New("Not supported file format")
 }
 
-func LoadFile(file string) *[]byte {
-	var filePath string
-	var err error
-
-	if filePath, err = FullPath(file); err != nil {
-		//fmt.Printf("Failed to resolve full path to file %s: %v\n", file, err)
-		return nil
+func LoadAndParseJsonFile(fileName string, dst interface{}) error {
+	var (
+		err  error
+		data *[]byte
+	)
+	if data, err = LoadFile(fileName); err != nil {
+		return err
 	}
-
-	if fileExists := FileExists(filePath); !fileExists {
-		//fmt.Printf("File %s does not exist\n", filePath)
-		return nil
+	if err = json.Unmarshal(*data, dst); err != nil {
+		return err
 	}
-
-	content, err := os.ReadFile(filePath)
-	if err != nil {
-		//fmt.Printf("Failed to read file %s: %v\n", file, err)
-		return nil
-	}
-
-	return &content
+	return nil
 }
 
-func FileExists(filePath string) bool {
+func LoadAndParseYamlFile(fileName string, dst interface{}) error {
+	var (
+		err  error
+		data *[]byte
+	)
+	if data, err = LoadFile(fileName); err != nil {
+		return err
+	}
+	if err := yaml.Unmarshal(*data, dst); err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoadFile(file string) (*[]byte, error) {
+	var (
+		filePath string
+		err      error
+		content  []byte
+	)
+	if filePath, err = GetFullPath(file); err != nil {
+		return nil, err
+	}
+	if fileExists := PathExists(filePath); !fileExists {
+		return nil, err
+	}
+	if content, err = os.ReadFile(filePath); err != nil {
+		return nil, err
+	}
+	return &content, nil
+}
+
+func PathExists(filePath string) bool {
 	_, err := os.Stat(filePath)
 	return err == nil
 }
 
-func FullPath(filePath string) (string, error) {
+func GetFullPath(filePath string) (string, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
-
 	fullPath := filepath.Join(cwd, filePath)
 	return fullPath, nil
 }
