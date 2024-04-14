@@ -1,4 +1,4 @@
-module github.com/eynopv/gorcli
+module github.com/eynopv/lac
 
 go 1.21.5
 

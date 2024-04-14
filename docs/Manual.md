@@ -1,6 +1,6 @@
 # Manual
 
-`gorcli` supports Yaml and JSON files, but this manual only uses JSON.
+`lac` supports Yaml and JSON files, but this manual only uses JSON.
 
 ## Requests
 
@@ -26,12 +26,12 @@ Create request:
 Send request:
 
 ```sh
-gorcli run createPet.json
+lac run createPet.json
 ```
 
 ## Variables and .env
 
-`gorcli` can use paased variables and preload `.env`
+`lac` can use paased variables and preload `.env`
 
 ```javascript
 // variables.json
@@ -61,15 +61,15 @@ To use variables in request, write it surrounded by `${` and `}`.
 }
 ```
 
-Then pass variables to `gorcli`
+Then pass variables to `lac`
 
 ```sh
-gorcli run getPet.json --vars variables.json
+lac run getPet.json --vars variables.json
 ```
 
 ## Headers
 
-`gorcli` can use passed headers and headers can contain variables.
+`lac` can use passed headers and headers can contain variables.
 
 ```javascript
 // headers.json
@@ -80,10 +80,10 @@ gorcli run getPet.json --vars variables.json
 }
 ```
 
-Pass headers and variables to `gorcli`
+Pass headers and variables to `lac`
 
 ```sh
-gorcli run getPet.json --vars variables.json --headers headers.json
+lac run getPet.json --vars variables.json --headers headers.json
 ```
 
 ## Tests
@@ -114,5 +114,5 @@ gorcli run getPet.json --vars variables.json --headers headers.json
 ```
 
 ```sh
-gorcli test createAndGetPet.json --headers headers.json --vars variables.json
+lac test createAndGetPet.json --headers headers.json --vars variables.json
 ```

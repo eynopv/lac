@@ -1,6 +1,5 @@
 .env
 .env.*
 
+lac
 example/
-.gorcli/
-gorcli.config.json

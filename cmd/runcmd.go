@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/eynopv/gorcli/internal"
+	"github.com/eynopv/lac/internal"
 	"github.com/spf13/cobra"
 )
 

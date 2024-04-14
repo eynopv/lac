@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eynopv/gorcli/internal/utils"
+	"github.com/eynopv/lac/internal/utils"
 )
 
 type Request struct {

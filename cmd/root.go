@@ -1,15 +1,15 @@
 package cmd
 
 import (
-	"github.com/eynopv/gorcli/internal"
-	"github.com/eynopv/gorcli/internal/utils"
+	"github.com/eynopv/lac/internal"
+	"github.com/eynopv/lac/internal/utils"
 	"github.com/spf13/cobra"
 )
 
 var (
 	rootCmd = &cobra.Command{
-		Use:     "gorcli",
-		Version: "0.2.1",
+		Use:     "lac",
+		Version: "0.2.2",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			internal.LoadDotEnv()
 

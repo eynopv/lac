@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/eynopv/gorcli/internal"
-	"github.com/eynopv/gorcli/internal/utils"
+	"github.com/eynopv/lac/internal"
+	"github.com/eynopv/lac/internal/utils"
 	"github.com/spf13/cobra"
 )
 
