@@ -5,6 +5,7 @@ import (
 	"maps"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/eynopv/lac/internal"
 	"github.com/eynopv/lac/internal/utils"
@@ -37,12 +38,35 @@ func testCommandFunction(
 	headers map[string]string,
 	timeout int,
 ) {
-	var testFlow TestFlow
 	testPath := args[0]
 
-	if err := utils.LoadItem(testPath, &testFlow); err != nil {
-		fmt.Printf("Unable to make test: %v\n", err)
+	matches, err := findMatchindFiles(testPath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	hadErrors := false
+	for _, match := range matches {
+		if err := loadAndRunTest(match, variables, headers, timeout); err != nil {
+			hadErrors = true
+		}
+	}
+
+	if hadErrors {
 		os.Exit(1)
+	}
+}
+
+func loadAndRunTest(
+	testPath string,
+	variables map[string]string,
+	headers map[string]string,
+	timeout int,
+) error {
+	var testFlow TestFlow
+	if err := utils.LoadItem(testPath, &testFlow); err != nil {
+		return err
 	}
 
 	newVariables := make(map[string]string)
@@ -62,22 +86,20 @@ func testCommandFunction(
 		usesPath := filepath.Join(filepath.Dir(testPath), item.Uses)
 		request, err := internal.NewRequest(usesPath, headers, requestVariables)
 		if err != nil {
-			fmt.Printf("Unable to make request: %v\n", err)
-			os.Exit(1)
+			return err
 		}
 
 		result, err := internal.DoRequest(request, timeout)
 		if err != nil {
-			fmt.Printf("Unable to send request: %v\n", err)
-			os.Exit(1)
+			return err
 		}
 
 		if item.Expect != nil {
 			err := item.Expect.Check(result)
 			if err != nil {
+				fmt.Println(testPath)
 				utils.PrintPrettyJson(result.Body)
-				fmt.Println(err)
-				os.Exit(1)
+				return err
 			}
 		}
 
@@ -87,4 +109,42 @@ func testCommandFunction(
 			maps.Copy(newVariables, utils.FlattenMap(result.Body, item.Id))
 		}
 	}
+
+	return nil
+}
+
+func findMatchindFiles(pattern string) ([]string, error) {
+	var (
+		matches []string
+		err     error
+	)
+	if strings.Contains(pattern, "**") {
+		parts := strings.SplitN(pattern, "**", 2)
+		basePattern := parts[0]
+		matchPattern := parts[1]
+		err = filepath.Walk(basePattern, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.IsDir() {
+				matched, err := filepath.Match(filepath.Dir(path)+matchPattern, path)
+				if err != nil {
+					return err
+				}
+				if matched {
+					matches = append(matches, path)
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		matches, err = filepath.Glob(pattern)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return matches, nil
 }
