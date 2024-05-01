@@ -1,14 +1,18 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"maps"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/eynopv/lac/internal"
+	"github.com/eynopv/lac/internal/expectation"
+	"github.com/eynopv/lac/internal/param"
+	"github.com/eynopv/lac/internal/request"
 	"github.com/eynopv/lac/internal/utils"
+	"github.com/eynopv/lac/internal/utils/printer"
 	"github.com/spf13/cobra"
 )
 
@@ -26,10 +30,10 @@ var testCmd = &cobra.Command{
 }
 
 type TestFlow []struct {
-	Id     string                `json:"id" yaml:"id"`
-	Uses   string                `json:"uses" yaml:"uses"`
-	With   map[string]string     `json:"with" yaml:"with"`
-	Expect *internal.Expectation `json:"expect" yaml:"expect"`
+	Id     string                   `json:"id" yaml:"id"`
+	Uses   string                   `json:"uses" yaml:"uses"`
+	With   map[string]string        `json:"with" yaml:"with"`
+	Expect *expectation.Expectation `json:"expect" yaml:"expect"`
 }
 
 func testCommandFunction(
@@ -46,14 +50,28 @@ func testCommandFunction(
 		return
 	}
 
-	hadErrors := false
+	failedCount := 0
 	for _, match := range matches {
 		if err := loadAndRunTest(match, variables, headers, timeout); err != nil {
-			hadErrors = true
+			failedCount += 1
+			fmt.Println(printer.Red(printer.Cross), match)
+			fmt.Println(printer.Red(err.Error()))
+		} else {
+			fmt.Println(printer.Green(printer.Checkmark), match)
 		}
 	}
 
-	if hadErrors {
+	fmt.Println()
+	passedText := fmt.Sprintf("%v passed", len(matches)-failedCount)
+	if failedCount > 0 {
+		passedText = printer.Red(passedText)
+	} else {
+		passedText = printer.Green(passedText)
+	}
+	fmt.Println(fmt.Sprintf("Tests: %v (%v)", passedText, len(matches)))
+	fmt.Println("Time:", 0)
+
+	if failedCount > 0 {
 		os.Exit(1)
 	}
 }
@@ -78,18 +96,19 @@ func loadAndRunTest(
 		if item.With != nil {
 			withVars := make(map[string]string)
 			for key, value := range item.With {
-				withVars[key] = internal.ParseParam(value, variables)
+				withVars[key] = param.Param(value).Resolve(newVariables)
 			}
 			maps.Copy(requestVariables, withVars)
 		}
+		maps.Copy(requestVariables, newVariables)
 
 		usesPath := filepath.Join(filepath.Dir(testPath), item.Uses)
-		request, err := internal.NewRequest(usesPath, headers, requestVariables)
+		req, err := request.NewRequest(usesPath, headers, requestVariables)
 		if err != nil {
 			return err
 		}
 
-		result, err := internal.DoRequest(request, timeout)
+		result, err := request.DoRequest(req, timeout)
 		if err != nil {
 			return err
 		}
@@ -97,16 +116,12 @@ func loadAndRunTest(
 		if item.Expect != nil {
 			err := item.Expect.Check(result)
 			if err != nil {
-				fmt.Println(testPath)
-				utils.PrintPrettyJson(result.Body)
-				return err
+				return errors.New(item.Uses + " " + err.Error())
 			}
 		}
 
-		result.Print(Verbose)
-
 		if item.Id != "" {
-			maps.Copy(newVariables, utils.FlattenMap(result.Body, item.Id))
+			maps.Copy(newVariables, utils.FlattenMap(result.Body, item.Id+".body"))
 		}
 	}
 

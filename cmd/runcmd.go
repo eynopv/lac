@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/eynopv/lac/internal"
+	"github.com/eynopv/lac/internal/request"
 	"github.com/spf13/cobra"
 )
 
@@ -29,14 +29,14 @@ func runCommandFunction(
 ) {
 	requestName := args[0]
 
-	request, err := internal.NewRequest(requestName, headers, variables)
+	req, err := request.NewRequest(requestName, headers, variables)
 
 	if err != nil {
 		fmt.Printf("Unable to make request: %v\n", err)
 		os.Exit(1)
 	}
 
-	result, err := internal.DoRequest(request, timeout)
+	result, err := request.DoRequest(req, timeout)
 	if err != nil {
 		fmt.Printf("Error sending request: %v\n", err)
 		os.Exit(1)

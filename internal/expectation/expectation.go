@@ -1,9 +1,11 @@
-package internal
+package expectation
 
 import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/eynopv/lac/internal/result"
 )
 
 type Expectation struct {
@@ -11,7 +13,7 @@ type Expectation struct {
 	TimeLessThan time.Duration `json:"timeLessThan"`
 }
 
-func (e Expectation) Check(r *Result) error {
+func (e Expectation) Check(r *result.Result) error {
 	if e.Status != 0 && e.Status != r.StatusCode {
 		return errors.New(fmt.Sprintf("Expected status %v but got %v", e.Status, r.StatusCode))
 	}

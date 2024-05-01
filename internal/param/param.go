@@ -1,16 +1,17 @@
-package internal
+package param
 
 import (
 	"os"
 	"regexp"
 )
 
-type Param struct {
-	Name  string
-	Value string
+type Param string
+
+func (p Param) Resolve(replacements map[string]string) string {
+	return ResolveParam(string(p), replacements)
 }
 
-func ParseParam(p string, replacements map[string]string) string {
+func ResolveParam(p string, replacements map[string]string) string {
 	re := regexp.MustCompile(`\${([^}]+)}`)
 
 	replaced := re.ReplaceAllStringFunc(p, func(match string) string {
