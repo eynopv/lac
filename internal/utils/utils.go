@@ -1,6 +1,9 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+	"maps"
+)
 
 func FlattenMap(input map[string]interface{}, prefix string) map[string]string {
 	flattened := map[string]string{}
@@ -25,4 +28,12 @@ func FlattenMap(input map[string]interface{}, prefix string) map[string]string {
 	}
 
 	return flattened
+}
+
+func CombineMaps(input ...map[string]string) map[string]string {
+	finalMap := map[string]string{}
+	for _, m := range input {
+		maps.Copy(finalMap, m)
+	}
+	return finalMap
 }

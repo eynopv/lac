@@ -3,7 +3,6 @@ package request
 import (
 	"encoding/json"
 	"io"
-	"maps"
 	"net/http"
 	"strings"
 	"time"
@@ -18,6 +17,31 @@ type Request struct {
 	Path    string `json:"path" yaml:"path"`
 	Body    json.RawMessage
 	Headers map[string]string `json:"headers" yaml:"headers"`
+}
+
+func NewRequestV2(
+	method string,
+	path string,
+	body []byte,
+	headers map[string]string,
+) Request {
+	return Request{
+		Method:  method,
+		Path:    path,
+		Body:    body,
+		Headers: headers,
+	}
+}
+
+func (r *Request) ResolveParameters(variables map[string]string) {
+	r.Path = param.Param(r.Path).Resolve(variables)
+	for key, value := range r.Headers {
+		r.Headers[key] = param.Param(value).Resolve(variables)
+	}
+	if len(r.Body) != 0 {
+		stringBody := param.Param(string(r.Body)).Resolve(variables)
+		r.Body = []byte(stringBody)
+	}
 }
 
 func NewRequest(
@@ -48,16 +72,7 @@ func NewRequest(
 		return nil, err
 	}
 
-	finalHeaders := map[string]string{}
-
-	if headers != nil {
-		maps.Copy(finalHeaders, headers)
-	}
-
-	if requestData.Headers != nil {
-		maps.Copy(finalHeaders, requestData.Headers)
-	}
-
+	finalHeaders := utils.CombineMaps(headers, requestData.Headers)
 	for key, value := range finalHeaders {
 		request.Header.Set(key, param.Param(value).Resolve(variables))
 	}
