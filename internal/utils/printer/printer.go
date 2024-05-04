@@ -33,3 +33,15 @@ func Green(s string) string {
 func Yellow(s string) string {
 	return colorYellow + s + colorReset
 }
+
+func Blue(s string) string {
+	return colorBlue + s + colorReset
+}
+
+func Magenta(s string) string {
+	return colorMagenta + s + colorReset
+}
+
+func Cyan(s string) string {
+	return colorCyan + s + colorReset
+}

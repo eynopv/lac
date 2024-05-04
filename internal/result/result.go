@@ -51,16 +51,25 @@ func NewResult(
 }
 
 func (r *Result) Print(showHeaders bool) {
-	fmt.Println("Status:", r.Status)
-	fmt.Println("Elapsed Time:", r.ElapsedTime)
+	if r.StatusCode < 300 {
+		fmt.Println(printer.Green(r.Status))
+	} else {
+		fmt.Println(printer.Red(r.Status))
+	}
+
+	fmt.Println(fmt.Sprintf("%s: %s", printer.Cyan("Elapsed Time"), r.ElapsedTime))
 
 	if showHeaders {
-		printer.PrintPrettyJson(r.Headers)
+		for key, value := range r.Headers {
+			fmt.Println(fmt.Sprintf("%s: %s", printer.Cyan(key), strings.Join(value, ", ")))
+		}
 	}
 
 	if r.Body != nil {
+		fmt.Println()
 		printer.PrintPrettyJson(r.Body)
 	} else if r.Text != "" {
+		fmt.Println()
 		fmt.Println(r.Text)
 	}
 }
