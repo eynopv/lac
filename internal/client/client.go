@@ -54,6 +54,7 @@ func (c *Client) Do(r *request.Request) (*result.Result, error) {
 
 	result, err := result.NewResult(
 		elapsedTime,
+		res.Request.URL.String(),
 		res.Status,
 		res.StatusCode,
 		res.Header,

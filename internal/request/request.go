@@ -106,6 +106,7 @@ func DoRequest(request *http.Request, timeout int) (*result.Result, error) {
 
 	result, err := result.NewResult(
 		elapsedTime,
+		res.Request.URL.Path,
 		res.Status,
 		res.StatusCode,
 		res.Header,

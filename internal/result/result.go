@@ -11,6 +11,7 @@ import (
 )
 
 type Result struct {
+	Path        string
 	Status      string
 	StatusCode  int
 	ElapsedTime time.Duration
@@ -21,12 +22,14 @@ type Result struct {
 
 func NewResult(
 	elapsedTime time.Duration,
+	path string,
 	status string,
 	statusCode int,
 	headers http.Header,
 	bodyRaw []byte,
 ) (Result, error) {
 	result := Result{
+		Path:        path,
 		ElapsedTime: elapsedTime,
 		Status:      status,
 		StatusCode:  statusCode,
@@ -51,6 +54,8 @@ func NewResult(
 }
 
 func (r *Result) Print(showHeaders bool) {
+	fmt.Println(r.Path)
+
 	if r.StatusCode < 300 {
 		fmt.Println(printer.Green(r.Status))
 	} else {
