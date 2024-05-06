@@ -58,6 +58,8 @@ func (r *Result) Print(showHeaders bool) {
 
 	if r.StatusCode < 300 {
 		fmt.Println(printer.Green(r.Status))
+	} else if r.StatusCode >= 300 && r.StatusCode < 400 {
+		fmt.Println(printer.Cyan(r.Status))
 	} else {
 		fmt.Println(printer.Red(r.Status))
 	}
