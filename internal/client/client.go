@@ -46,8 +46,13 @@ func (c *Client) Do(r *request.Request) (*result.Result, error) {
 	res, err := client.Do(request)
 	elapsedTime := time.Since(start)
 
+	if err != nil {
+		return nil, err
+	}
+
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
+
 	if err != nil {
 		return nil, err
 	}
