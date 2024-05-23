@@ -29,9 +29,15 @@ var (
 				}
 			}
 
-			if len(HeadersFilePath) > 0 {
-				if err := utils.LoadItem(HeadersFilePath, &Headers); err != nil {
-					return err
+			Headers = map[string]string{}
+			for _, headersInput := range HeadersInput {
+				err := utils.LoadItem(headersInput, &Headers)
+				if err != nil {
+					keyValue := strings.Split(headersInput, "=")
+					if len(keyValue) != 2 {
+						return fmt.Errorf("Invalid headers input: %v", headersInput)
+					}
+					Headers[keyValue[0]] = keyValue[1]
 				}
 			}
 
@@ -39,12 +45,12 @@ var (
 		},
 	}
 
-	VariablesInput  []string
-	HeadersFilePath string
-	Verbose         bool
-	Variables       map[string]string
-	Headers         map[string]string
-	Timeout         int
+	VariablesInput []string
+	HeadersInput   []string
+	Verbose        bool
+	Variables      map[string]string
+	Headers        map[string]string
+	Timeout        int
 )
 
 func Execute() error {
@@ -54,6 +60,6 @@ func Execute() error {
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringSliceVar(&VariablesInput, "vars", []string{}, "variables")
-	rootCmd.PersistentFlags().StringVar(&HeadersFilePath, "headers", "", "headers file path")
+	rootCmd.PersistentFlags().StringSliceVar(&HeadersInput, "headers", []string{}, "headers")
 	rootCmd.PersistentFlags().IntVarP(&Timeout, "timeout", "t", 15, "request timeout")
 }
