@@ -14,7 +14,7 @@ var (
 		Use:     "lac",
 		Version: "0.2.5",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			internal.LoadDotEnv()
+			internal.LoadDotEnv(EnvironmentFilePath)
 
 			Variables = map[string]string{}
 
@@ -45,12 +45,13 @@ var (
 		},
 	}
 
-	VariablesInput []string
-	HeadersInput   []string
-	Verbose        bool
-	Variables      map[string]string
-	Headers        map[string]string
-	Timeout        int
+	VariablesInput      []string
+	HeadersInput        []string
+	Verbose             bool
+	Variables           map[string]string
+	Headers             map[string]string
+	Timeout             int
+	EnvironmentFilePath string
 )
 
 func Execute() error {
@@ -62,4 +63,5 @@ func init() {
 	rootCmd.PersistentFlags().StringSliceVar(&VariablesInput, "vars", []string{}, "variables")
 	rootCmd.PersistentFlags().StringSliceVar(&HeadersInput, "headers", []string{}, "headers")
 	rootCmd.PersistentFlags().IntVarP(&Timeout, "timeout", "t", 15, "request timeout")
+	rootCmd.PersistentFlags().StringVar(&EnvironmentFilePath, "env", ".env", "environment file")
 }
