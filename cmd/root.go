@@ -12,7 +12,7 @@ import (
 var (
 	rootCmd = &cobra.Command{
 		Use:     "lac",
-		Version: "0.2.2",
+		Version: "0.2.5",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			internal.LoadDotEnv()
 
