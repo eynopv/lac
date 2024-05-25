@@ -63,6 +63,7 @@ func (c *Client) Do(r *request.Request) (*result.Result, error) {
 		res.Status,
 		res.StatusCode,
 		res.Header,
+		res.Proto,
 		body,
 	)
 

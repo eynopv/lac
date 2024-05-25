@@ -14,6 +14,7 @@ type Result struct {
 	Path        string
 	Status      string
 	StatusCode  int
+	Protocol    string
 	ElapsedTime time.Duration
 	Body        map[string]interface{}
 	Text        string
@@ -26,6 +27,7 @@ func NewResult(
 	status string,
 	statusCode int,
 	headers http.Header,
+	protocol string,
 	bodyRaw []byte,
 ) (Result, error) {
 	result := Result{
@@ -34,6 +36,7 @@ func NewResult(
 		Status:      status,
 		StatusCode:  statusCode,
 		Headers:     headers,
+		Protocol:    protocol,
 	}
 
 	if len(bodyRaw) > 0 {
@@ -56,12 +59,14 @@ func NewResult(
 func (r *Result) Print(showHeaders bool) {
 	fmt.Println(r.Path)
 
+	// TODO: add protocol
+	// HTTP 1.1 200 OK
 	if r.StatusCode < 300 {
-		fmt.Println(printer.Green(r.Status))
+		fmt.Println(r.Protocol, printer.Green(r.Status))
 	} else if r.StatusCode >= 300 && r.StatusCode < 400 {
-		fmt.Println(printer.Cyan(r.Status))
+		fmt.Println(r.Protocol, printer.Cyan(r.Status))
 	} else {
-		fmt.Println(printer.Red(r.Status))
+		fmt.Println(r.Protocol, printer.Red(r.Status))
 	}
 
 	fmt.Println(fmt.Sprintf("%s: %s", printer.Cyan("Elapsed Time"), r.ElapsedTime))

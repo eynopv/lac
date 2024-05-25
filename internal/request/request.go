@@ -110,6 +110,7 @@ func DoRequest(request *http.Request, timeout int) (*result.Result, error) {
 		res.Status,
 		res.StatusCode,
 		res.Header,
+		res.Proto,
 		body,
 	)
 
