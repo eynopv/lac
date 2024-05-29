@@ -2,7 +2,7 @@ package utils
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,7 +17,7 @@ func LoadItem(item string, dst interface{}) error {
 	if strings.HasSuffix(item, ".yaml") || strings.HasSuffix(item, ".yml") {
 		return LoadAndParseYamlFile(item, dst)
 	}
-	return errors.New("Not supported file format")
+	return fmt.Errorf("Not supported file: %v", item)
 }
 
 func LoadAndParseJsonFile(fileName string, dst interface{}) error {

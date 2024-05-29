@@ -13,6 +13,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:     "lac",
 		Version: "0.2.5",
+		Args:    cobra.ExactArgs(1),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			internal.LoadDotEnv(EnvironmentFilePath)
 
@@ -42,6 +43,9 @@ var (
 			}
 
 			return nil
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			runCommandFunction(args, Variables, Headers, Timeout)
 		},
 	}
 

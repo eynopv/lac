@@ -8,21 +8,7 @@ import (
 	"github.com/eynopv/lac/internal/param"
 	"github.com/eynopv/lac/internal/request"
 	"github.com/eynopv/lac/internal/utils"
-	"github.com/spf13/cobra"
 )
-
-func init() {
-	rootCmd.AddCommand(runCmd)
-}
-
-var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "Execute request",
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		runCommandFunction(args, Variables, Headers, Timeout)
-	},
-}
 
 func runCommandFunction(
 	args []string,
@@ -36,6 +22,10 @@ func runCommandFunction(
 	}
 
 	req, err := request.LoadRequest(args[0])
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	req.Headers = utils.CombineMaps(resolvedHeaders, req.Headers)
 
 	if err != nil {
