@@ -56,11 +56,10 @@ func NewResult(
 	return result, nil
 }
 
-func (r *Result) Print(showHeaders bool) {
+func (r *Result) Print() {
 	fmt.Println(r.Path)
+	fmt.Println()
 
-	// TODO: add protocol
-	// HTTP 1.1 200 OK
 	if r.StatusCode < 300 {
 		fmt.Println(r.Protocol, printer.Green(r.Status))
 	} else if r.StatusCode >= 300 && r.StatusCode < 400 {
@@ -71,10 +70,8 @@ func (r *Result) Print(showHeaders bool) {
 
 	fmt.Println(fmt.Sprintf("%s: %s", printer.Cyan("Elapsed Time"), r.ElapsedTime))
 
-	if showHeaders {
-		for key, value := range r.Headers {
-			fmt.Println(fmt.Sprintf("%s: %s", printer.Cyan(key), strings.Join(value, ", ")))
-		}
+	for key, value := range r.Headers {
+		fmt.Println(fmt.Sprintf("%s: %s", printer.Cyan(key), strings.Join(value, ", ")))
 	}
 
 	if r.Body != nil {

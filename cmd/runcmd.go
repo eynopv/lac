@@ -42,5 +42,5 @@ func runCommandFunction(
 		os.Exit(1)
 	}
 
-	result.Print(Verbose)
+	result.Print()
 }

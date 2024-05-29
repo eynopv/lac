@@ -51,7 +51,6 @@ var (
 
 	VariablesInput      []string
 	HeadersInput        []string
-	Verbose             bool
 	Variables           map[string]string
 	Headers             map[string]string
 	Timeout             int
@@ -63,7 +62,6 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringSliceVar(&VariablesInput, "vars", []string{}, "variables")
 	rootCmd.PersistentFlags().StringSliceVar(&HeadersInput, "headers", []string{}, "headers")
 	rootCmd.PersistentFlags().IntVarP(&Timeout, "timeout", "t", 15, "request timeout")
