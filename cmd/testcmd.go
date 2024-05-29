@@ -16,10 +16,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(testCmd)
-}
-
 var testCmd = &cobra.Command{
 	Use:   "test",
 	Short: "Execute test",
