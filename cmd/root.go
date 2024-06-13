@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/eynopv/lac/internal"
-	"github.com/eynopv/lac/internal/utils"
 	"github.com/spf13/cobra"
+	"github.com/joho/godotenv"
+
+	"github.com/eynopv/lac/pkg/utils"
 )
 
 var (
@@ -15,7 +16,7 @@ var (
 		Version: "0.2.5",
 		Args:    cobra.ExactArgs(1),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			internal.LoadDotEnv(EnvironmentFilePath)
+			godotenv.Load(EnvironmentFilePath)
 
 			Variables = map[string]string{}
 

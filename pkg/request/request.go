@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eynopv/lac/internal/param"
-	"github.com/eynopv/lac/internal/result"
-	"github.com/eynopv/lac/internal/utils"
+	"github.com/eynopv/lac/pkg/param"
+	"github.com/eynopv/lac/pkg/result"
+	"github.com/eynopv/lac/pkg/utils"
 )
 
 type Request struct {

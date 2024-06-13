@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/eynopv/lac/internal/request"
-	"github.com/eynopv/lac/internal/result"
+	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/result"
 )
 
 type Client struct {

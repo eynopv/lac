@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eynopv/lac/internal/result"
+	"github.com/eynopv/lac/pkg/result"
 )
 
 func TestSuccessfullExpectation(t *testing.T) {

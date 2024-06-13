@@ -3,8 +3,8 @@ package flow
 import (
 	"path/filepath"
 
-	"github.com/eynopv/lac/internal/expectation"
-	"github.com/eynopv/lac/internal/utils"
+	"github.com/eynopv/lac/pkg/expectation"
+	"github.com/eynopv/lac/pkg/utils"
 )
 
 type Flow struct {
@@ -13,10 +13,10 @@ type Flow struct {
 }
 
 type FlowItem struct {
-	Id     string                   `json:"id" yaml:"id"`
-	Uses   string                   `json:"uses" yaml:"uses"`
-	With   map[string]string        `json:"with" yaml:"with"`
-	Expect *expectation.Expectation `json:"expect" yaml:"expect"`
+	Id        string                   `json:"id" yaml:"id"`
+	Uses      string                   `json:"uses" yaml:"uses"`
+	Variables map[string]string        `json:"variables" yaml:"variables"`
+	Expect    *expectation.Expectation `json:"expect" yaml:"expect"`
 }
 
 func LoadFlow(flowPath string) (*Flow, error) {
@@ -26,6 +26,7 @@ func LoadFlow(flowPath string) (*Flow, error) {
 	if err := utils.LoadItem(flowPath, &flow.Items); err != nil {
 		return nil, err
 	}
+	flow.ResolveItemPaths()
 	return &flow, nil
 }
 

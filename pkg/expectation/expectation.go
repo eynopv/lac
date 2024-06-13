@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/eynopv/lac/internal/result"
+	"github.com/eynopv/lac/pkg/result"
 )
 
 type Expectation struct {
