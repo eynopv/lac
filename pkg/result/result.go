@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eynopv/lac/pkg/utils/printer"
+	"github.com/eynopv/lac/pkg/printer"
 )
 
 type Result struct {
