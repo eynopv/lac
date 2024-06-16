@@ -8,13 +8,9 @@ import (
 type Param string
 
 func (p Param) Resolve(replacements map[string]string) string {
-	return ResolveParam(string(p), replacements)
-}
-
-func ResolveParam(p string, replacements map[string]string) string {
 	re := regexp.MustCompile(`\${([^}]+)}`)
 
-	replaced := re.ReplaceAllStringFunc(p, func(match string) string {
+	replaced := re.ReplaceAllStringFunc(string(p), func(match string) string {
 		placeholder := match[2 : len(match)-1]
 
 		if replacements != nil {
