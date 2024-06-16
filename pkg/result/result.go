@@ -58,17 +58,16 @@ func NewResult(
 
 func (r *Result) Print() {
 	fmt.Println(r.Path)
-	fmt.Println()
 
 	if r.StatusCode < 300 {
-		fmt.Println(r.Protocol, printer.Green(r.Status))
+		fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Green(r.Status), r.ElapsedTime)
 	} else if r.StatusCode >= 300 && r.StatusCode < 400 {
-		fmt.Println(r.Protocol, printer.Cyan(r.Status))
+		fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Cyan(r.Status), r.ElapsedTime)
 	} else {
-		fmt.Println(r.Protocol, printer.Red(r.Status))
+		fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Red(r.Status), r.ElapsedTime)
 	}
 
-	fmt.Printf("%s: %s\n", printer.Cyan("Elapsed Time"), r.ElapsedTime)
+	fmt.Println()
 
 	for key, value := range r.Headers {
 		fmt.Printf("%s: %s\n", printer.Cyan(key), strings.Join(value, ", "))
