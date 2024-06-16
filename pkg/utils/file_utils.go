@@ -21,15 +21,11 @@ func LoadItem(item string, dst interface{}) error {
 	}
 
 	if strings.HasSuffix(item, ".json") {
-		if err = json.Unmarshal(*data, dst); err != nil {
-			return err
-		}
+		return json.Unmarshal(*data, dst)
 	}
 
 	if strings.HasSuffix(item, ".yaml") || strings.HasSuffix(item, ".yml") {
-		if err := yaml.Unmarshal(*data, dst); err != nil {
-			return err
-		}
+		return yaml.Unmarshal(*data, dst)
 	}
 
 	return fmt.Errorf("Not supported file: %v", item)
