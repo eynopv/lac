@@ -11,41 +11,28 @@ import (
 )
 
 func LoadItem(item string, dst interface{}) error {
+	var (
+		err  error
+		data *[]byte
+	)
+
+	if data, err = LoadFile(item); err != nil {
+		return err
+	}
+
 	if strings.HasSuffix(item, ".json") {
-		return LoadAndParseJsonFile(item, dst)
+		if err = json.Unmarshal(*data, dst); err != nil {
+			return err
+		}
 	}
+
 	if strings.HasSuffix(item, ".yaml") || strings.HasSuffix(item, ".yml") {
-		return LoadAndParseYamlFile(item, dst)
+		if err := yaml.Unmarshal(*data, dst); err != nil {
+			return err
+		}
 	}
+
 	return fmt.Errorf("Not supported file: %v", item)
-}
-
-func LoadAndParseJsonFile(fileName string, dst interface{}) error {
-	var (
-		err  error
-		data *[]byte
-	)
-	if data, err = LoadFile(fileName); err != nil {
-		return err
-	}
-	if err = json.Unmarshal(*data, dst); err != nil {
-		return err
-	}
-	return nil
-}
-
-func LoadAndParseYamlFile(fileName string, dst interface{}) error {
-	var (
-		err  error
-		data *[]byte
-	)
-	if data, err = LoadFile(fileName); err != nil {
-		return err
-	}
-	if err := yaml.Unmarshal(*data, dst); err != nil {
-		return err
-	}
-	return nil
 }
 
 func LoadFile(file string) (*[]byte, error) {

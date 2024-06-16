@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestFlattenMap(t *testing.T) {
+func TestToPrettyJsonString(t *testing.T) {
 	m := map[string]interface{}{
 		"a": map[string]interface{}{
 			"b": "c",
@@ -15,7 +15,7 @@ func TestFlattenMap(t *testing.T) {
 		"g": "k",
 	}
 
-	_, err := toPrettyJsonString(m)
+	_, err := ToPrettyJsonString(m)
 	if err != nil {
 		t.Fatalf(err.Error())
 	}

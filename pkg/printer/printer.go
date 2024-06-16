@@ -6,7 +6,7 @@ import (
 )
 
 func PrintPrettyJson(v any) {
-	prettyJson, err := toPrettyJsonString(v)
+	prettyJson, err := ToPrettyJsonString(v)
 	if err != nil {
 		fmt.Printf("Failed to parse %v to json: %v\n", v, err)
 		return
@@ -14,7 +14,7 @@ func PrintPrettyJson(v any) {
 	fmt.Println(prettyJson)
 }
 
-func toPrettyJsonString(v any) (string, error) {
+func ToPrettyJsonString(v any) (string, error) {
 	prettyJson, err := json.MarshalIndent(v, "", " ")
 	if err != nil {
 		return "", err
@@ -23,25 +23,25 @@ func toPrettyJsonString(v any) (string, error) {
 }
 
 func Red(s string) string {
-	return colorRed + s + colorReset
+	return ColorRed + s + ColorReset
 }
 
 func Green(s string) string {
-	return colorGreen + s + colorReset
+	return ColorGreen + s + ColorReset
 }
 
 func Yellow(s string) string {
-	return colorYellow + s + colorReset
+	return ColorYellow + s + ColorReset
 }
 
 func Blue(s string) string {
-	return colorBlue + s + colorReset
+	return ColorBlue + s + ColorReset
 }
 
 func Magenta(s string) string {
-	return colorMagenta + s + colorReset
+	return ColorMagenta + s + ColorReset
 }
 
 func Cyan(s string) string {
-	return colorCyan + s + colorReset
+	return ColorCyan + s + ColorReset
 }

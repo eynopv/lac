@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eynopv/lac/internal/utils/printer"
+	"github.com/eynopv/lac/pkg/printer"
 )
 
 type Result struct {
@@ -68,10 +68,10 @@ func (r *Result) Print() {
 		fmt.Println(r.Protocol, printer.Red(r.Status))
 	}
 
-	fmt.Println(fmt.Sprintf("%s: %s", printer.Cyan("Elapsed Time"), r.ElapsedTime))
+	fmt.Printf("%s: %s\n", printer.Cyan("Elapsed Time"), r.ElapsedTime)
 
 	for key, value := range r.Headers {
-		fmt.Println(fmt.Sprintf("%s: %s", printer.Cyan(key), strings.Join(value, ", ")))
+		fmt.Printf("%s: %s\n", printer.Cyan(key), strings.Join(value, ", "))
 	}
 
 	if r.Body != nil {

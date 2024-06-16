@@ -6,18 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/eynopv/lac/internal/request"
-	"github.com/eynopv/lac/internal/result"
+	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/result"
 )
 
 type Client struct {
 	Timeout int
-}
-
-func NewClient(timeout int) Client {
-	return Client{
-		Timeout: timeout,
-	}
 }
 
 func (c *Client) Do(r *request.Request) (*result.Result, error) {
