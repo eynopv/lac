@@ -26,7 +26,7 @@ Create request:
 Send request:
 
 ```sh
-lac run createPet.json
+lac createPet.json
 ```
 
 ## Variables and .env
@@ -42,7 +42,7 @@ lac run createPet.json
 ```
 
 ```sh
-// .env
+# .env
 
 API_KEY=mysecretkey
 ```
@@ -64,7 +64,7 @@ To use variables in request, write it surrounded by `${` and `}`.
 Then pass variables to `lac`
 
 ```sh
-lac run getPet.json --vars variables.json
+lac getPet.json --vars variables.json
 ```
 
 ## Headers
@@ -83,36 +83,5 @@ lac run getPet.json --vars variables.json
 Pass headers and variables to `lac`
 
 ```sh
-lac run getPet.json --vars variables.json --headers headers.json
-```
-
-## Tests
-
-```javascript
-// createAndGetPet.json
-
-[
-  {
-    "id": "createPet",
-    "uses": "createPet.json"
-    "expect": {
-      "status": 201,
-      "timeLessThan": 3000
-    }
-  },
-  {
-    "uses": "getPet.json"
-    "with": {
-      "petId": "${createPet.id}"
-    },
-    "expect": {
-      "status": 200,
-      "timeLessThan": 1000
-    }
-  }
-]
-```
-
-```sh
-lac test createAndGetPet.json --headers headers.json --vars variables.json
+lac getPet.json --vars variables.json --headers headers.json
 ```
