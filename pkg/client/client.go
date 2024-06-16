@@ -14,12 +14,6 @@ type Client struct {
 	Timeout int
 }
 
-func NewClient(timeout int) Client {
-	return Client{
-		Timeout: timeout,
-	}
-}
-
 func (c *Client) Do(r *request.Request) (*result.Result, error) {
 	var (
 		request *http.Request

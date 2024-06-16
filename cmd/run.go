@@ -16,23 +16,9 @@ func runCommandFunction(
 	headers map[string]string,
 	timeout int,
 ) {
-
-	requestClient := client.NewClient(timeout)
-
-		/*
-	if strings.HasSuffix(args[0], ".flow.yaml") || strings.HasSuffix(args[0], ".flow.json") {
-		flow, err := flow.LoadFlow(args[0])
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		for _, item := range flow.Items {
-			req, err := request.LoadRequest(item.Uses)
-		}
+	requestClient := client.Client{
+		Timeout: timeout,
 	}
-		*/
-
 
 	req, err := request.LoadRequest(args[0])
 	if err != nil {
