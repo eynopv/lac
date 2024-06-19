@@ -1,0 +1,4 @@
+{
+  "path": "${host}/get",
+  "method": "GET"
+}

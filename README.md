@@ -2,7 +2,7 @@
 
 `lac` is a cli only API client. It can be used for API exploration and testing.
 
-![screenshot of lac](docs/images/cli.png)
+![screenshot of lac](docs/images/carbon.png)
 
 ## Installation
 
@@ -15,10 +15,30 @@ go install github.com/eynopv/lac@latest
 ## Usage
 
 ```sh
-lac [command]
+lac [flags] request.json
 ```
 
-Read [manual](docs/Manual.md)
+### Example
+
+**Create request object**
+
+```js
+// get.json
+
+{
+  "path": "https://httpbin.org/get"
+}
+```
+
+**Send the request**
+
+```sh
+lac get.json
+```
+
+### Guide
+
+Read [user guide](docs/UserGuide.md)
 
 ## License
 
