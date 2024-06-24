@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spf13/cobra"
 	"github.com/joho/godotenv"
+	"github.com/spf13/cobra"
 
 	"github.com/eynopv/lac/pkg/utils"
 )
@@ -39,7 +39,7 @@ var (
 					if len(keyValue) != 2 {
 						return fmt.Errorf("Invalid headers input: %v", headersInput)
 					}
-					Headers[keyValue[0]] = keyValue[1]
+					Headers[strings.ToLower(keyValue[0])] = keyValue[1]
 				}
 			}
 

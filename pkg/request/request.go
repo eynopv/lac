@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/eynopv/lac/pkg/param"
@@ -29,7 +30,7 @@ func LoadRequest(itemPath string) (*Request, error) {
 func (r *Request) ResolveParameters(variables map[string]string) {
 	r.Path = param.Param(r.Path).Resolve(variables)
 	for key, value := range r.Headers {
-		r.Headers[key] = param.Param(value).Resolve(variables)
+		r.Headers[strings.ToLower(key)] = param.Param(value).Resolve(variables)
 	}
 	if len(r.Body) != 0 {
 		stringBody := param.Param(string(r.Body)).Resolve(variables)
