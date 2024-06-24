@@ -11,9 +11,11 @@ import (
 )
 
 var (
+	version = "0.2.5"
+
 	rootCmd = &cobra.Command{
 		Use:     "lac",
-		Version: "0.2.5",
+		Version: version,
 		Args:    cobra.ExactArgs(1),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			godotenv.Load(EnvironmentFilePath)
@@ -31,7 +33,9 @@ var (
 				}
 			}
 
-			Headers = map[string]string{}
+			Headers = map[string]string{
+				"user-agent": fmt.Sprintf("lac/%s", version),
+			}
 			for _, headersInput := range HeadersInput {
 				err := utils.LoadItem(headersInput, &Headers)
 				if err != nil {
