@@ -12,19 +12,36 @@ import (
 	"github.com/eynopv/lac/pkg/utils"
 )
 
-type Request struct {
+type RequestData struct {
 	Method  string `json:"method" yaml:"method"`
 	Path    string `json:"path" yaml:"path"`
 	Body    json.RawMessage
 	Headers map[string]string `json:"headers" yaml:"headers"`
 }
 
+type Request struct {
+	Method  string
+	Path    string
+	Body    []byte
+	Headers map[string]string
+}
+
 func LoadRequest(itemPath string) (*Request, error) {
-	var request Request
-	if err := utils.LoadItem(itemPath, &request); err != nil {
+	var data RequestData
+	if err := utils.LoadItem(itemPath, &data); err != nil {
 		return nil, err
 	}
+	request := NewRequest(data)
 	return &request, nil
+}
+
+func NewRequest(data RequestData) Request {
+	return Request{
+		Method:  utils.StringToHttpMethod(data.Method),
+		Path:    data.Path,
+		Body:    data.Body,
+		Headers: data.Headers,
+	}
 }
 
 func (r *Request) ResolveParameters(variables map[string]string) {
