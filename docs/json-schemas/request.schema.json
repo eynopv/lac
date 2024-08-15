@@ -7,14 +7,15 @@
   "properties": {
     "method": {
       "type": "string",
-      "description": "HTTP method"
+      "description": "HTTP method",
+      "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"]
     },
     "path": {
       "type": "string",
       "description": "URL destination of request"
     },
     "body": {
-      "description": "Body of the request"
+      "description": "Body of the request as map or string"
     },
     "headers": {
       "type": "object",
