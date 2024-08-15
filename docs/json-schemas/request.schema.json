@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/request.schema.json",
+  "title": "Request Schema",
+  "description": "A schema of lac request",
+  "type": "object",
+  "properties": {
+    "method": {
+      "type": "string",
+      "description": "HTTP method"
+    },
+    "path": {
+      "type": "string",
+      "description": "URL destination of request"
+    },
+    "body": {
+      "description": "Body of the request"
+    },
+    "headers": {
+      "type": "object",
+      "description": "Headers as map of strings"
+    },
+    "variables": {
+      "type": "object",
+      "description": "Values of variables as map of strings"
+    }
+  }
+}
