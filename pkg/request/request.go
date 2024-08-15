@@ -13,17 +13,19 @@ import (
 )
 
 type RequestData struct {
-	Method  string `json:"method" yaml:"method"`
-	Path    string `json:"path" yaml:"path"`
-	Body    json.RawMessage
-	Headers map[string]string `json:"headers" yaml:"headers"`
+	Method    string `json:"method" yaml:"method"`
+	Path      string `json:"path" yaml:"path"`
+	Body      json.RawMessage
+	Headers   map[string]string `json:"headers" yaml:"headers"`
+	Variables map[string]string `json:"variables" yaml:"variables"`
 }
 
 type Request struct {
-	Method  string
-	Path    string
-	Body    []byte
-	Headers map[string]string
+	Method    string
+	Path      string
+	Body      []byte
+	Headers   map[string]string
+	Variables map[string]string
 }
 
 func LoadRequest(itemPath string) (*Request, error) {
@@ -37,20 +39,45 @@ func LoadRequest(itemPath string) (*Request, error) {
 
 func NewRequest(data RequestData) Request {
 	return Request{
-		Method:  utils.StringToHttpMethod(data.Method),
-		Path:    data.Path,
-		Body:    data.Body,
-		Headers: data.Headers,
+		Method:    utils.StringToHttpMethod(data.Method),
+		Path:      data.Path,
+		Body:      data.Body,
+		Headers:   data.Headers,
+		Variables: data.Variables,
 	}
 }
 
 func (r *Request) ResolveParameters(variables map[string]string) {
+	r.resolvePathParameters(variables)
+	r.resolveHeaderParameters(variables)
+	r.resolveBodyParameters(variables)
+}
+
+func (r *Request) resolvePathParameters(variables map[string]string) {
+	initialPath := r.Path
 	r.Path = param.Param(r.Path).Resolve(variables)
-	for key, value := range r.Headers {
-		r.Headers[strings.ToLower(key)] = param.Param(value).Resolve(variables)
+	if r.Path == initialPath {
+		r.Path = param.Param(r.Path).Resolve(r.Variables)
 	}
+}
+
+func (r *Request) resolveHeaderParameters(variables map[string]string) {
+	for key, value := range r.Headers {
+		initialHeaderValue := r.Headers[strings.ToLower(key)]
+		r.Headers[strings.ToLower(key)] = param.Param(value).Resolve(variables)
+		if initialHeaderValue == r.Headers[strings.ToLower(key)] {
+			r.Headers[strings.ToLower(key)] = param.Param(value).Resolve(r.Variables)
+		}
+	}
+}
+
+func (r *Request) resolveBodyParameters(variables map[string]string) {
 	if len(r.Body) != 0 {
+		initialBody := string(r.Body)
 		stringBody := param.Param(string(r.Body)).Resolve(variables)
+		if initialBody == stringBody {
+			stringBody = param.Param(string(r.Body)).Resolve(r.Variables)
+		}
 		r.Body = []byte(stringBody)
 	}
 }

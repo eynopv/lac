@@ -1,4 +1,7 @@
 {
   "path": "${host}/get",
-  "method": "GET"
+  "method": "GET",
+  "variables": {
+    "host": "https://httpbin.org"
+  }
 }
