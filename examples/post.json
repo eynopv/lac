@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/eynopv/lac/master/docs/json-schemas/request.schema.json",
   "path": "${host}/post",
   "method": "POST",
   "headers": {
