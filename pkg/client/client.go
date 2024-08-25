@@ -1,9 +1,9 @@
 package client
 
 import (
-	"bytes"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/eynopv/lac/pkg/request"
@@ -21,7 +21,8 @@ func (c *Client) Do(r *request.Request) (*result.Result, error) {
 	)
 
 	if len(r.Body) != 0 {
-		bodyReader := bytes.NewReader(r.Body)
+		bodyStr := strings.Trim(strings.TrimSpace(string(r.Body)), `"`)
+		bodyReader := strings.NewReader(bodyStr)
 		request, err = http.NewRequest(r.Method, r.Path, bodyReader)
 	} else {
 		request, err = http.NewRequest(r.Method, r.Path, nil)
