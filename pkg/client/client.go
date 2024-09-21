@@ -3,7 +3,6 @@ package client
 import (
 	"io"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/eynopv/lac/pkg/request"
@@ -11,33 +10,30 @@ import (
 )
 
 type Client struct {
-	Timeout int
+	timeout         int
+	followRedirects bool
+}
+
+type ClientConfig struct {
+	Timeout     int
+	NoRedirects bool
+}
+
+func NewClient(config *ClientConfig) *Client {
+	return &Client{
+		timeout:         config.Timeout,
+		followRedirects: !config.NoRedirects,
+	}
 }
 
 func (c *Client) Do(r *request.Request) (*result.Result, error) {
-	var (
-		request *http.Request
-		err     error
-	)
-
-	if len(r.Body) != 0 {
-		bodyStr := strings.Trim(strings.TrimSpace(string(r.Body)), `"`)
-		bodyReader := strings.NewReader(bodyStr)
-		request, err = http.NewRequest(r.Method, r.Path, bodyReader)
-	} else {
-		request, err = http.NewRequest(r.Method, r.Path, nil)
-	}
-
+	request, err := r.ToHttpRequest()
 	if err != nil {
 		return nil, err
 	}
 
-	for key, value := range r.Headers {
-		request.Header.Set(key, value)
-	}
-
+	client := c.ToHttpClient()
 	start := time.Now()
-	client := http.Client{Timeout: time.Duration(c.Timeout) * time.Second}
 	res, err := client.Do(request)
 	elapsedTime := time.Since(start)
 
@@ -67,4 +63,16 @@ func (c *Client) Do(r *request.Request) (*result.Result, error) {
 	}
 
 	return &result, nil
+}
+
+func (c *Client) ToHttpClient() *http.Client {
+	client := http.Client{Timeout: time.Duration(c.timeout) * time.Second}
+	if !c.followRedirects {
+		client.CheckRedirect = NoRedirects
+	}
+	return &client
+}
+
+func NoRedirects(req *http.Request, via []*http.Request) error {
+	return http.ErrUseLastResponse
 }

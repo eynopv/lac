@@ -114,3 +114,28 @@ func DoRequest(request *http.Request, timeout int) (*result.Result, error) {
 
 	return &result, nil
 }
+
+func (r *Request) ToHttpRequest() (*http.Request, error) {
+	var (
+		request *http.Request
+		err     error
+	)
+
+	if len(r.Body) != 0 {
+		bodyStr := strings.Trim(strings.TrimSpace(string(r.Body)), `"`)
+		bodyReader := strings.NewReader(bodyStr)
+		request, err = http.NewRequest(r.Method, r.Path, bodyReader)
+	} else {
+		request, err = http.NewRequest(r.Method, r.Path, nil)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	for key, value := range r.Headers {
+		request.Header.Set(key, value)
+	}
+
+	return request, nil
+}

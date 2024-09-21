@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 
+	"github.com/eynopv/lac/pkg/client"
 	"github.com/eynopv/lac/pkg/utils"
 )
 
@@ -50,7 +51,7 @@ var (
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			runCommandFunction(args, Variables, Headers, Timeout)
+			runCommandFunction(args, Variables, Headers, &ClientConfig)
 		},
 	}
 
@@ -58,8 +59,8 @@ var (
 	HeadersInput        []string
 	Variables           map[string]string
 	Headers             map[string]string
-	Timeout             int
 	EnvironmentFilePath string
+	ClientConfig        client.ClientConfig
 )
 
 func Execute() error {
@@ -69,6 +70,7 @@ func Execute() error {
 func init() {
 	rootCmd.PersistentFlags().StringSliceVar(&VariablesInput, "vars", []string{}, "variables")
 	rootCmd.PersistentFlags().StringSliceVar(&HeadersInput, "headers", []string{}, "headers")
-	rootCmd.PersistentFlags().IntVarP(&Timeout, "timeout", "t", 15, "request timeout")
+	rootCmd.PersistentFlags().IntVarP(&ClientConfig.Timeout, "timeout", "t", 15, "request timeout")
+	rootCmd.PersistentFlags().BoolVar(&ClientConfig.NoRedirects, "no-redirects", false, "do not follow redirects")
 	rootCmd.PersistentFlags().StringVar(&EnvironmentFilePath, "env", ".env", "environment file")
 }

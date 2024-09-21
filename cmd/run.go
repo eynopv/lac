@@ -14,26 +14,22 @@ func runCommandFunction(
 	args []string,
 	variables map[string]string,
 	headers map[string]string,
-	timeout int,
+	clientConfig *client.ClientConfig,
 ) {
-	requestClient := client.Client{
-		Timeout: timeout,
-	}
-
 	req, err := request.LoadRequest(args[0])
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	runRequest(req, variables, headers, requestClient)
+	runRequest(req, variables, headers, client.NewClient(clientConfig))
 }
 
 func runRequest(
 	req *request.Request,
 	variables map[string]string,
 	headers map[string]string,
-	client client.Client,
+	client *client.Client,
 ) {
 	resolvedHeaders := map[string]string{}
 	for key, value := range headers {
