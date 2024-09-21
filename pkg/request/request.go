@@ -2,13 +2,10 @@ package request
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/eynopv/lac/pkg/param"
-	"github.com/eynopv/lac/pkg/result"
 	"github.com/eynopv/lac/pkg/utils"
 )
 
@@ -80,39 +77,6 @@ func (r *Request) resolveBodyParameters(variables map[string]string) {
 		}
 		r.Body = []byte(stringBody)
 	}
-}
-
-func DoRequest(request *http.Request, timeout int) (*result.Result, error) {
-	start := time.Now()
-	client := http.Client{Timeout: time.Duration(timeout) * time.Second}
-	res, err := client.Do(request)
-	elapsedTime := time.Since(start)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	result, err := result.NewResult(
-		elapsedTime,
-		res.Request.URL.Path,
-		res.Status,
-		res.StatusCode,
-		res.Header,
-		res.Proto,
-		body,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &result, nil
 }
 
 func (r *Request) ToHttpRequest() (*http.Request, error) {
