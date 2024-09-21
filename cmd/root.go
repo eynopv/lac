@@ -19,7 +19,7 @@ var (
 		Version: version,
 		Args:    cobra.ExactArgs(1),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			godotenv.Load(EnvironmentFilePath)
+			godotenv.Load(EnvironmentFilePathInput)
 
 			if err := prepareVariables(); err != nil {
 				return err
@@ -36,14 +36,13 @@ var (
 		},
 	}
 
-	VariablesInput      []string
-	HeadersInput        []string
-	EnvironmentFilePath string
-	ClientConfig        client.ClientConfig
+	VariablesInput           []string
+	HeadersInput             []string
+	EnvironmentFilePathInput string
 
-	Variables = map[string]string{}
-
-	Headers = map[string]string{
+	ClientConfig client.ClientConfig
+	Variables    = map[string]string{}
+	Headers      = map[string]string{
 		"user-agent": fmt.Sprintf("lac/%s", version),
 	}
 )
@@ -51,9 +50,9 @@ var (
 func init() {
 	rootCmd.PersistentFlags().StringSliceVar(&VariablesInput, "vars", []string{}, "variables")
 	rootCmd.PersistentFlags().StringSliceVar(&HeadersInput, "headers", []string{}, "headers")
+	rootCmd.PersistentFlags().StringVar(&EnvironmentFilePathInput, "env", ".env", "environment file")
 	rootCmd.PersistentFlags().IntVarP(&ClientConfig.Timeout, "timeout", "t", 15, "request timeout")
 	rootCmd.PersistentFlags().BoolVar(&ClientConfig.NoRedirects, "no-redirects", false, "do not follow redirects")
-	rootCmd.PersistentFlags().StringVar(&EnvironmentFilePath, "env", ".env", "environment file")
 }
 
 func Execute() error {
