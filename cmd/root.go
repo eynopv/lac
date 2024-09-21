@@ -21,31 +21,12 @@ var (
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			godotenv.Load(EnvironmentFilePath)
 
-			Variables = map[string]string{}
-
-			for _, variableInput := range VariablesInput {
-				err := utils.LoadItem(variableInput, &Variables)
-				if err != nil {
-					keyValue := strings.Split(variableInput, "=")
-					if len(keyValue) != 2 {
-						return fmt.Errorf("Invalid variables input: %v", variableInput)
-					}
-					Variables[keyValue[0]] = keyValue[1]
-				}
+			if err := prepareVariables(); err != nil {
+				return err
 			}
 
-			Headers = map[string]string{
-				"user-agent": fmt.Sprintf("lac/%s", version),
-			}
-			for _, headersInput := range HeadersInput {
-				err := utils.LoadItem(headersInput, &Headers)
-				if err != nil {
-					keyValue := strings.Split(headersInput, "=")
-					if len(keyValue) != 2 {
-						return fmt.Errorf("Invalid headers input: %v", headersInput)
-					}
-					Headers[strings.ToLower(keyValue[0])] = keyValue[1]
-				}
+			if err := prepareHeaders(); err != nil {
+				return err
 			}
 
 			return nil
@@ -57,15 +38,15 @@ var (
 
 	VariablesInput      []string
 	HeadersInput        []string
-	Variables           map[string]string
-	Headers             map[string]string
 	EnvironmentFilePath string
 	ClientConfig        client.ClientConfig
-)
 
-func Execute() error {
-	return rootCmd.Execute()
-}
+	Variables = map[string]string{}
+
+	Headers = map[string]string{
+		"user-agent": fmt.Sprintf("lac/%s", version),
+	}
+)
 
 func init() {
 	rootCmd.PersistentFlags().StringSliceVar(&VariablesInput, "vars", []string{}, "variables")
@@ -73,4 +54,37 @@ func init() {
 	rootCmd.PersistentFlags().IntVarP(&ClientConfig.Timeout, "timeout", "t", 15, "request timeout")
 	rootCmd.PersistentFlags().BoolVar(&ClientConfig.NoRedirects, "no-redirects", false, "do not follow redirects")
 	rootCmd.PersistentFlags().StringVar(&EnvironmentFilePath, "env", ".env", "environment file")
+}
+
+func Execute() error {
+	return rootCmd.Execute()
+}
+
+func prepareVariables() error {
+	for _, variableInput := range VariablesInput {
+		err := utils.LoadItem(variableInput, &Variables)
+		if err != nil {
+			keyValue := strings.Split(variableInput, "=")
+			if len(keyValue) != 2 {
+				return fmt.Errorf("Invalid variables input: %v", variableInput)
+			}
+			Variables[keyValue[0]] = keyValue[1]
+		}
+	}
+	return nil
+}
+
+func prepareHeaders() error {
+	for _, headersInput := range HeadersInput {
+		err := utils.LoadItem(headersInput, &Headers)
+		if err != nil {
+			keyValue := strings.Split(headersInput, "=")
+			if len(keyValue) != 2 {
+				return fmt.Errorf("Invalid headers input: %v", headersInput)
+			}
+			Headers[strings.ToLower(keyValue[0])] = keyValue[1]
+		}
+	}
+
+	return nil
 }
