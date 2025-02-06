@@ -12,8 +12,6 @@ import (
 )
 
 var (
-	version = "0.3.0"
-
 	rootCmd = &cobra.Command{
 		Use:     "lac",
 		Version: version,
