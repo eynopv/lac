@@ -35,8 +35,12 @@ func LoadRequest(itemPath string) (*Request, error) {
 }
 
 func NewRequest(data RequestData) Request {
+	method := utils.StringToHttpMethod(data.Method)
+	if data.Method == "" {
+		method = http.MethodGet
+	}
 	return Request{
-		Method:    utils.StringToHttpMethod(data.Method),
+		Method:    method,
 		Path:      data.Path,
 		Body:      data.Body,
 		Headers:   data.Headers,
