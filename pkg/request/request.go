@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/eynopv/lac/pkg/http_method"
 	"github.com/eynopv/lac/pkg/param"
 	"github.com/eynopv/lac/pkg/utils"
 )
@@ -35,9 +36,9 @@ func LoadRequest(itemPath string) (*Request, error) {
 }
 
 func NewRequest(data RequestData) Request {
-	method := utils.StringToHttpMethod(data.Method)
+	method := http.MethodGet
 	if data.Method == "" {
-		method = http.MethodGet
+		method = http_method.StringToHttpMethod(data.Method)
 	}
 	return Request{
 		Method:    method,

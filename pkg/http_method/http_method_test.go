@@ -1,4 +1,4 @@
-package utils
+package http_method
 
 import (
 	"net/http"
@@ -8,8 +8,8 @@ import (
 
 func TestUnknownMethod(t *testing.T) {
 	converted := StringToHttpMethod("unknown")
-	if converted != "UNKNOWN METHOD" {
-		t.Fatalf("expected 'UNKNOWN METHOD', got '%s'", converted)
+	if converted != "UNKNOWN" {
+		t.Fatalf("expected 'UNKNOWN', got '%s'", converted)
 	}
 }
 

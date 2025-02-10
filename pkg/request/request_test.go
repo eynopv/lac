@@ -12,8 +12,8 @@ func TestNewRequestDefaults(t *testing.T) {
 	if request.Path != "" {
 		t.Fatalf("expected path to be empty, got '%s'", request.Path)
 	}
-	if request.Method != "UNKNOWN METHOD" {
-		t.Fatalf("expected method to be 'UNKNOWN METHOD', got '%s'", request.Method)
+	if request.Method != "UNKNOWN" {
+		t.Fatalf("expected method to be 'UNKNOWN', got '%s'", request.Method)
 	}
 	if request.Body != nil {
 		t.Fatalf("expected body to be empty, got '%v'", request.Body)
