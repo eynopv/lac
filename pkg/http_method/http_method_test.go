@@ -2,93 +2,58 @@ package http_method
 
 import (
 	"net/http"
-	"strings"
 	"testing"
+
+	"github.com/eynopv/lac/internal/assert"
 )
 
-func TestUnknownMethod(t *testing.T) {
-	converted := StringToHttpMethod("unknown")
-	if converted != "UNKNOWN" {
-		t.Fatalf("expected 'UNKNOWN', got '%s'", converted)
+func TestStringToHttpMethod(t *testing.T) {
+	tests := []struct {
+		name  string
+		want  string
+		value string
+	}{
+		{
+			name:  "unknown method",
+			want:  "UNKNOWN",
+			value: "this_is_invalid_method",
+		},
+		{
+			name:  "get method",
+			want:  http.MethodGet,
+			value: "get",
+		},
+		{
+			name:  "post method",
+			want:  http.MethodPost,
+			value: "post",
+		},
+		{
+			name:  "put method",
+			want:  http.MethodPut,
+			value: "put",
+		},
+		{
+			name:  "patch method",
+			want:  http.MethodPatch,
+			value: "patch",
+		},
+		{
+			name:  "delete method",
+			want:  http.MethodDelete,
+			value: "delete",
+		},
+		{
+			name:  "case insensetive",
+			want:  http.MethodGet,
+			value: "gEt",
+		},
 	}
-}
 
-func TestConvertGetMethod(t *testing.T) {
-	method := "Get"
-	converted := StringToHttpMethod(method)
-	if converted != http.MethodGet {
-		t.Fatalf("expected '%s', got '%s'", http.MethodGet, converted)
-	}
-	converted = StringToHttpMethod(strings.ToLower(method))
-	if converted != http.MethodGet {
-		t.Fatalf("expected '%s', got '%s'", http.MethodGet, converted)
-	}
-	converted = StringToHttpMethod(strings.ToUpper(method))
-	if converted != http.MethodGet {
-		t.Fatalf("expected '%s', got '%s'", http.MethodGet, converted)
-	}
-}
-
-func TestConvertPostMethod(t *testing.T) {
-	method := "Post"
-	converted := StringToHttpMethod(method)
-	if converted != http.MethodPost {
-		t.Fatalf("expected '%s', got '%s'", http.MethodPost, converted)
-	}
-	converted = StringToHttpMethod(strings.ToLower(method))
-	if converted != http.MethodPost {
-		t.Fatalf("expected '%s', got '%s'", http.MethodPost, converted)
-	}
-	converted = StringToHttpMethod(strings.ToUpper(method))
-	if converted != http.MethodPost {
-		t.Fatalf("expected '%s', got '%s'", http.MethodPost, converted)
-	}
-}
-
-func TestConvertPutMethod(t *testing.T) {
-	method := "Put"
-	converted := StringToHttpMethod(method)
-	if converted != http.MethodPut {
-		t.Fatalf("expected '%s', got '%s'", http.MethodPut, converted)
-	}
-	converted = StringToHttpMethod(strings.ToLower(method))
-	if converted != http.MethodPut {
-		t.Fatalf("expected '%s', got '%s'", http.MethodPut, converted)
-	}
-	converted = StringToHttpMethod(strings.ToUpper(method))
-	if converted != http.MethodPut {
-		t.Fatalf("expected '%s', got '%s'", http.MethodPut, converted)
-	}
-}
-
-func TestConvertPatchMethod(t *testing.T) {
-	method := "Patch"
-	converted := StringToHttpMethod(method)
-	if converted != http.MethodPatch {
-		t.Fatalf("expected '%s', got '%s'", http.MethodPatch, converted)
-	}
-	converted = StringToHttpMethod(strings.ToLower(method))
-	if converted != http.MethodPatch {
-		t.Fatalf("expected '%s', got '%s'", http.MethodPatch, converted)
-	}
-	converted = StringToHttpMethod(strings.ToUpper(method))
-	if converted != http.MethodPatch {
-		t.Fatalf("expected '%s', got '%s'", http.MethodPatch, converted)
-	}
-}
-
-func TestConvertDeleteMethod(t *testing.T) {
-	method := "Delete"
-	converted := StringToHttpMethod(method)
-	if converted != http.MethodDelete {
-		t.Fatalf("expected '%s', got '%s'", http.MethodDelete, converted)
-	}
-	converted = StringToHttpMethod(strings.ToLower(method))
-	if converted != http.MethodDelete {
-		t.Fatalf("expected '%s', got '%s'", http.MethodDelete, converted)
-	}
-	converted = StringToHttpMethod(strings.ToUpper(method))
-	if converted != http.MethodDelete {
-		t.Fatalf("expected '%s', got '%s'", http.MethodDelete, converted)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			converted := StringToHttpMethod(tt.value)
+			assert.Equal(t, converted, tt.want)
+		})
 	}
 }

@@ -3,6 +3,8 @@ package client
 import (
 	"net/http"
 	"testing"
+
+	"github.com/eynopv/lac/internal/assert"
 )
 
 func TestNewClient(t *testing.T) {
@@ -11,12 +13,8 @@ func TestNewClient(t *testing.T) {
 		NoRedirects: true,
 	}
 	client := NewClient(&clientConfig)
-	if client.timeout != 30 {
-		t.Fatalf("expected timeout %d to be %d", client.timeout, clientConfig.Timeout)
-	}
-	if client.followRedirects != false {
-		t.Fatalf("expected followeRedirects %v to be %v", client.followRedirects, clientConfig.Timeout)
-	}
+	assert.Equal(t, client.timeout, 30)
+	assert.Equal(t, client.followRedirects, false)
 }
 
 func TestToHttpClient(t *testing.T) {
@@ -26,9 +24,7 @@ func TestToHttpClient(t *testing.T) {
 			NoRedirects: false,
 		})
 		httpClient := client.ToHttpClient()
-		if httpClient.CheckRedirect != nil {
-			t.Fatalf("expected CheckRedirect to be nil")
-		}
+		assert.DeepEqual(t, httpClient.CheckRedirect, nil)
 	})
 
 	t.Run("no follow redirects", func(t *testing.T) {
@@ -37,15 +33,11 @@ func TestToHttpClient(t *testing.T) {
 			NoRedirects: true,
 		})
 		httpClient := client.ToHttpClient()
-		if httpClient.CheckRedirect == nil {
-			t.Fatalf("expected CheckRedirect to be set")
-		}
+		assert.NotNil(t, httpClient.CheckRedirect)
 	})
 }
 
 func TestNotRedirectsReturnsLastResponse(t *testing.T) {
 	err := NoRedirects(nil, nil)
-	if err != http.ErrUseLastResponse {
-		t.Fatalf("expected error to be ErrUseLastResponse")
-	}
+	assert.Equal(t, err, http.ErrUseLastResponse)
 }
