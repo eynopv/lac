@@ -56,24 +56,26 @@ func NewResult(
 	return result, nil
 }
 
-func (r *Result) Print() {
-	if r.StatusCode < 300 {
-		fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Green(r.Status), r.ElapsedTime)
-	} else if r.StatusCode >= 300 && r.StatusCode < 400 {
-		fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Cyan(r.Status), r.ElapsedTime)
-	} else {
-		fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Red(r.Status), r.ElapsedTime)
+func (r *Result) Print(printBody, printHeaders bool) {
+	if printHeaders {
+		if r.StatusCode < 300 {
+			fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Green(r.Status), r.ElapsedTime)
+		} else if r.StatusCode >= 300 && r.StatusCode < 400 {
+			fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Cyan(r.Status), r.ElapsedTime)
+		} else {
+			fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Red(r.Status), r.ElapsedTime)
+		}
+
+		printer.PrintHeaders(r.Headers)
 	}
 
-	for key, value := range r.Headers {
-		fmt.Printf("%s: %s\n", printer.Cyan(key), strings.Join(value, ", "))
-	}
-
-	if r.Body != nil {
-		fmt.Println()
-		printer.PrintPrettyJson(r.Body)
-	} else if r.Text != "" {
-		fmt.Println()
-		fmt.Println(r.Text)
+	if printBody {
+		if r.Body != nil {
+			fmt.Println()
+			printer.PrintPrettyJson(r.Body)
+		} else if r.Text != "" {
+			fmt.Println()
+			fmt.Println(r.Text)
+		}
 	}
 }

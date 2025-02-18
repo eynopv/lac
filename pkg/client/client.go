@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/eynopv/lac/pkg/printer"
 	"github.com/eynopv/lac/pkg/request"
 	"github.com/eynopv/lac/pkg/result"
 )
@@ -12,17 +13,20 @@ import (
 type Client struct {
 	timeout         int
 	followRedirects bool
+	PrinterConfig   printer.PrinterConfig
 }
 
 type ClientConfig struct {
-	Timeout     int
-	NoRedirects bool
+	Timeout       int
+	NoRedirects   bool
+	PrinterConfig printer.PrinterConfig
 }
 
 func NewClient(config *ClientConfig) *Client {
 	return &Client{
 		timeout:         config.Timeout,
 		followRedirects: !config.NoRedirects,
+		PrinterConfig:   config.PrinterConfig,
 	}
 }
 

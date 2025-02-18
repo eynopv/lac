@@ -19,6 +19,11 @@ var (
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			godotenv.Load(EnvironmentFilePathInput)
 
+			ClientConfig.PrinterConfig.PrintResponseBody = strings.Contains(PrintParameters, "b")
+			ClientConfig.PrinterConfig.PrintResponseHeaders = strings.Contains(PrintParameters, "h")
+			ClientConfig.PrinterConfig.PrintRequestBody = strings.Contains(PrintParameters, "B")
+			ClientConfig.PrinterConfig.PrintRequestHeaders = strings.Contains(PrintParameters, "H")
+
 			if err := prepareVariables(); err != nil {
 				return err
 			}
@@ -37,6 +42,7 @@ var (
 	VariablesInput           []string
 	HeadersInput             []string
 	EnvironmentFilePathInput string
+	PrintParameters          string
 
 	ClientConfig client.ClientConfig
 	Variables    = map[string]string{}
@@ -51,6 +57,13 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&EnvironmentFilePathInput, "env", ".env", "environment file")
 	rootCmd.PersistentFlags().IntVarP(&ClientConfig.Timeout, "timeout", "t", 15, "request timeout")
 	rootCmd.PersistentFlags().BoolVar(&ClientConfig.NoRedirects, "no-redirects", false, "do not follow redirects")
+	rootCmd.PersistentFlags().StringVar(&PrintParameters, "print", "b",
+		"what should be printed in output:\n"+
+			" b - response body\n"+
+			" h - response headers\n"+
+			" B - request body\n"+
+			" H - request headers\n",
+	)
 }
 
 func Execute() error {
