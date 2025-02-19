@@ -8,12 +8,13 @@ import (
 	"github.com/eynopv/lac/pkg/http_method"
 	"github.com/eynopv/lac/pkg/param"
 	"github.com/eynopv/lac/pkg/utils"
+	"gopkg.in/yaml.v3"
 )
 
 type RequestData struct {
-	Method    string `json:"method" yaml:"method"`
-	Path      string `json:"path" yaml:"path"`
-	Body      json.RawMessage
+	Method    string            `json:"method" yaml:"method"`
+	Path      string            `json:"path" yaml:"path"`
+	Body      ByteBody          `json:"body" yaml:"body"`
 	Headers   map[string]string `json:"headers" yaml:"headers"`
 	Variables map[string]string `json:"variables" yaml:"variables"`
 }
@@ -24,6 +25,26 @@ type Request struct {
 	Body      []byte
 	Headers   map[string]string
 	Variables map[string]string
+}
+
+type ByteBody []byte
+
+func (b *ByteBody) UnmarshalJSON(data []byte) error {
+	*b = ByteBody(data)
+	return nil
+}
+
+func (b *ByteBody) UnmarshalYAML(value *yaml.Node) error {
+	var raw interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+	jsonData, err := json.Marshal(raw)
+	if err != nil {
+		return err
+	}
+	*b = ByteBody(jsonData)
+	return nil
 }
 
 func LoadRequest(itemPath string) (*Request, error) {

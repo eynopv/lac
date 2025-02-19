@@ -1,16 +1,18 @@
 package request
 
 import (
+	"encoding/json"
 	"net/http"
 	"testing"
 
 	"github.com/eynopv/lac/internal/assert"
+	"gopkg.in/yaml.v3"
 )
 
 func TestNewRequestDefaults(t *testing.T) {
 	request := NewRequest(RequestData{})
 	assert.Equal(t, request.Path, "")
-	assert.Equal(t, request.Method, "UNKNOWN")
+	assert.Equal(t, request.Method, "GET")
 	assert.DeepEqual(t, request.Body, nil)
 	assert.DeepEqual(t, request.Headers, nil)
 	assert.DeepEqual(t, request.Variables, nil)
@@ -97,4 +99,41 @@ func TestResolveBodyParameterFromRequestVariabes(t *testing.T) {
 	}
 	req.ResolveParameters(nil)
 	assert.NotEqual(t, string(req.Body), initialBody)
+}
+
+func TestUnmarshalYaml(t *testing.T) {
+	data := `
+path: ${host}/post
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  key: value
+variables:
+  host: https://example.com
+  `
+	var requestData RequestData
+	err := yaml.Unmarshal([]byte(data), &requestData)
+	assert.NoError(t, err)
+}
+
+func TestUnmarshalJson(t *testing.T) {
+	data := `
+{
+  "path": "${host}/post",
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "key": "value"
+  },
+  "variables": {
+    "host": "https://example.com"
+  }
+}
+`
+	var requestData RequestData
+	err := json.Unmarshal([]byte(data), &requestData)
+	assert.NoError(t, err)
 }
