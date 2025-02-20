@@ -1,7 +1,14 @@
 package main
 
-import "github.com/eynopv/lac/cmd"
+import (
+	"fmt"
+
+	"github.com/eynopv/lac/cmd"
+)
 
 func main() {
-	cmd.Execute()
+	err := cmd.Execute()
+	if err != nil {
+		fmt.Println(err)
+	}
 }

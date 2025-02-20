@@ -8,7 +8,7 @@ import (
 	"github.com/eynopv/lac/pkg/http_method"
 	"github.com/eynopv/lac/pkg/param"
 	"github.com/eynopv/lac/pkg/utils"
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 )
 
 type RequestData struct {

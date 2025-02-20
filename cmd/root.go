@@ -17,7 +17,7 @@ var (
 		Version: version,
 		Args:    cobra.ExactArgs(1),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			godotenv.Load(EnvironmentFilePathInput)
+			_ = godotenv.Load(EnvironmentFilePathInput)
 
 			ClientConfig.PrinterConfig.PrintResponseBody = strings.Contains(PrintParameters, "b")
 			ClientConfig.PrinterConfig.PrintResponseHeaders = strings.Contains(PrintParameters, "h")

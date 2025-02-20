@@ -46,6 +46,14 @@ func NoError(t *testing.T, err error) {
 	}
 }
 
+func ErrorContains(t *testing.T, err error, expected string) {
+	t.Helper()
+
+	if !strings.Contains(err.Error(), expected) {
+		t.Errorf("expected %s; got %v", expected, err.Error())
+	}
+}
+
 func Nil(t *testing.T, value any) {
 	t.Helper()
 
