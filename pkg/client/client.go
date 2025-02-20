@@ -74,6 +74,7 @@ func (c *Client) ToHttpClient() *http.Client {
 	if !c.followRedirects {
 		client.CheckRedirect = NoRedirects
 	}
+
 	return &client
 }
 

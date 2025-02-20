@@ -22,7 +22,8 @@ func TestNewResultValidInputs(t *testing.T) {
 
 func TestNewResultJsonContent(t *testing.T) {
 	headers := http.Header{}
-	headers.Set("content-type", "application/json")
+	headers.Set("Content-Type", "application/json")
+
 	bodyRaw := []byte(`{"key":"value"}`)
 	result, err := NewResult(100*time.Millisecond, "/path", "200 OK", 200, headers, "HTTP/2.0", bodyRaw)
 
@@ -33,7 +34,8 @@ func TestNewResultJsonContent(t *testing.T) {
 
 func TestNewResultTextContent(t *testing.T) {
 	headers := http.Header{}
-	headers.Set("content-type", "text/plain")
+	headers.Set("Content-Type", "text/plain")
+
 	bodyRaw := []byte("plain text content")
 	result, err := NewResult(100*time.Millisecond, "/path", "200 OK", 200, headers, "HTTP/2.0", bodyRaw)
 
@@ -44,7 +46,8 @@ func TestNewResultTextContent(t *testing.T) {
 
 func TestNewResultEmptyBody(t *testing.T) {
 	headers := http.Header{}
-	headers.Set("content-type", "application/json")
+	headers.Set("Content-Type", "application/json")
+
 	result, err := NewResult(100*time.Millisecond, "/path", "200 OK", 200, headers, "HTTP/2.0", nil)
 
 	assert.NoError(t, err)
@@ -54,7 +57,8 @@ func TestNewResultEmptyBody(t *testing.T) {
 
 func TestNewResultInvalidJson(t *testing.T) {
 	headers := http.Header{}
-	headers.Set("content-type", "application/json")
+	headers.Set("Content-Type", "application/json")
+
 	bodyRaw := []byte(`{invalid json}`)
 	_, err := NewResult(100*time.Millisecond, "/path", "200 OK", 200, headers, "HTTP/2.0", bodyRaw)
 

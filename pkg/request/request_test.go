@@ -102,6 +102,8 @@ func TestResolveBodyParameterFromRequestVariabes(t *testing.T) {
 }
 
 func TestUnmarshalYaml(t *testing.T) {
+	var requestData RequestData
+
 	data := `
 path: ${host}/post
 method: POST
@@ -112,12 +114,14 @@ body:
 variables:
   host: https://example.com
   `
-	var requestData RequestData
 	err := yaml.Unmarshal([]byte(data), &requestData)
+
 	assert.NoError(t, err)
 }
 
 func TestUnmarshalJson(t *testing.T) {
+	var requestData RequestData
+
 	data := `
 {
   "path": "${host}/post",
@@ -133,7 +137,7 @@ func TestUnmarshalJson(t *testing.T) {
   }
 }
 `
-	var requestData RequestData
 	err := json.Unmarshal([]byte(data), &requestData)
+
 	assert.NoError(t, err)
 }

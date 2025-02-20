@@ -39,11 +39,14 @@ func (b *ByteBody) UnmarshalYAML(value *yaml.Node) error {
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
+
 	jsonData, err := json.Marshal(raw)
 	if err != nil {
 		return err
 	}
+
 	*b = ByteBody(jsonData)
+
 	return nil
 }
 
@@ -52,7 +55,9 @@ func LoadRequest(itemPath string) (*Request, error) {
 	if err := utils.LoadItem(itemPath, &data); err != nil {
 		return nil, err
 	}
+
 	request := NewRequest(data)
+
 	return &request, nil
 }
 
@@ -61,6 +66,7 @@ func NewRequest(data RequestData) Request {
 	if data.Method != "" {
 		method = http_method.StringToHttpMethod(data.Method)
 	}
+
 	return Request{
 		Method:    method,
 		Path:      data.Path,
@@ -79,6 +85,7 @@ func (r *Request) ResolveParameters(variables map[string]string) {
 func (r *Request) resolvePathParameters(variables map[string]string) {
 	initialPath := r.Path
 	r.Path = param.Param(r.Path).Resolve(variables)
+
 	if r.Path == initialPath {
 		r.Path = param.Param(r.Path).Resolve(r.Variables)
 	}
@@ -88,6 +95,7 @@ func (r *Request) resolveHeaderParameters(variables map[string]string) {
 	for key, value := range r.Headers {
 		initialHeaderValue := r.Headers[strings.ToLower(key)]
 		r.Headers[strings.ToLower(key)] = param.Param(value).Resolve(variables)
+
 		if initialHeaderValue == r.Headers[strings.ToLower(key)] {
 			r.Headers[strings.ToLower(key)] = param.Param(value).Resolve(r.Variables)
 		}
@@ -98,9 +106,11 @@ func (r *Request) resolveBodyParameters(variables map[string]string) {
 	if len(r.Body) != 0 {
 		initialBody := string(r.Body)
 		stringBody := param.Param(string(r.Body)).Resolve(variables)
+
 		if initialBody == stringBody {
 			stringBody = param.Param(string(r.Body)).Resolve(r.Variables)
 		}
+
 		r.Body = []byte(stringBody)
 	}
 }

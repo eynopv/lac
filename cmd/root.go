@@ -78,9 +78,11 @@ func prepareVariables() error {
 			if len(keyValue) != 2 {
 				return fmt.Errorf("Invalid variables input: %v", variableInput)
 			}
+
 			Variables[keyValue[0]] = keyValue[1]
 		}
 	}
+
 	return nil
 }
 
@@ -92,6 +94,7 @@ func prepareHeaders() error {
 			if len(keyValue) != 2 {
 				return fmt.Errorf("Invalid headers input: %v", headersInput)
 			}
+
 			Headers[strings.ToLower(keyValue[0])] = keyValue[1]
 		}
 	}

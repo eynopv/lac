@@ -34,6 +34,7 @@ func StringifyHeaders(headers http.Header) string {
 	for key, value := range headers {
 		s = append(s, fmt.Sprintf("%s: %s", Cyan(key), strings.Join(value, ", ")))
 	}
+
 	return strings.Join(s, "\n")
 }
 
@@ -43,6 +44,7 @@ func PrintPrettyJson(v any) {
 		fmt.Printf("Failed to parse %v to json: %v\n", v, err)
 		return
 	}
+
 	fmt.Println(prettyJson)
 }
 
@@ -51,6 +53,7 @@ func ToPrettyJsonString(v any) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(prettyJson), nil
 }
 

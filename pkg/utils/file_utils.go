@@ -37,15 +37,19 @@ func LoadFile(file string) (*[]byte, error) {
 		err      error
 		content  []byte
 	)
+
 	if filePath, err = GetFullPath(file); err != nil {
 		return nil, err
 	}
+
 	if fileExists := PathExists(filePath); !fileExists {
 		return nil, err
 	}
+
 	if content, err = os.ReadFile(filePath); err != nil {
 		return nil, err
 	}
+
 	return &content, nil
 }
 
@@ -59,6 +63,8 @@ func GetFullPath(filePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	fullPath := filepath.Join(cwd, filePath)
+
 	return fullPath, nil
 }

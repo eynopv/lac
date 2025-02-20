@@ -43,10 +43,12 @@ func NewResult(
 		contentType := headers.Get("Content-Type")
 		if strings.Contains(contentType, "application/json") {
 			var responseData map[string]interface{}
+
 			err := json.Unmarshal(bodyRaw, &responseData)
 			if err != nil {
 				return result, err
 			}
+
 			result.Body = responseData
 		} else if strings.Contains(contentType, "text/") {
 			result.Text = string(bodyRaw)

@@ -72,6 +72,7 @@ func runRequest(
 			} else {
 				fmt.Println(result.Text)
 			}
+
 			fmt.Println()
 		}
 	}
