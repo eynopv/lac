@@ -70,7 +70,7 @@ func runRequest(
 					fmt.Println("Invalid body")
 				}
 			} else {
-				fmt.Println(result.Text)
+				fmt.Println(string(req.Body))
 			}
 
 			fmt.Println()
