@@ -23,7 +23,7 @@ func TestNewRequest(t *testing.T) {
 		Path:      "https://example.com",
 		Method:    "get",
 		Body:      []byte{},
-		Headers:   map[string]string{},
+		Headers:   map[string]StringOrStringList{},
 		Variables: map[string]string{},
 	}
 	request := NewRequest(data)
@@ -37,8 +37,8 @@ func TestNewRequest(t *testing.T) {
 func TestRequestResolveParameters(t *testing.T) {
 	bodyString := "{\"field\":\"${value}\"}"
 
-	headers := map[string]string{
-		"x-api-key": "${API_KEY}",
+	headers := map[string]StringOrStringList{
+		"x-api-key": []string{"${API_KEY}"},
 	}
 
 	variables := map[string]string{
@@ -57,13 +57,13 @@ func TestRequestResolveParameters(t *testing.T) {
 	req.ResolveParameters(variables)
 
 	assert.Equal(t, req.Path, "example.com/api/resolvedId")
-	assert.Equal(t, req.Headers["x-api-key"], variables["API_KEY"])
+	assert.Equal(t, req.Headers["x-api-key"][0], variables["API_KEY"])
 	assert.StringContains(t, string(req.Body), variables["value"])
 }
 
 func TestResolveHeaderParameterFromRequestVariable(t *testing.T) {
-	headers := map[string]string{
-		"var": "${REQUEST_VARIABLE}",
+	headers := map[string]StringOrStringList{
+		"var": []string{"${REQUEST_VARIABLE}"},
 	}
 
 	req := Request{
@@ -74,7 +74,7 @@ func TestResolveHeaderParameterFromRequestVariable(t *testing.T) {
 	}
 	req.ResolveParameters(nil)
 
-	assert.Equal(t, req.Headers["var"], "resolved")
+	assert.Equal(t, req.Headers["var"][0], "resolved")
 }
 
 func TestResolvePathParameterFromRequestVariable(t *testing.T) {
@@ -109,6 +109,9 @@ path: ${host}/post
 method: POST
 headers:
   Content-Type: application/json
+  Accept:
+    - text/plain
+    - application/json
 body:
   key: value
 variables:
@@ -117,6 +120,9 @@ variables:
 	err := yaml.Unmarshal([]byte(data), &requestData)
 
 	assert.NoError(t, err)
+	assert.Equal(t, len(requestData.Headers), 2)
+	assert.Equal(t, requestData.Headers["Accept"][0], "text/plain")
+	assert.Equal(t, requestData.Headers["Accept"][1], "application/json")
 }
 
 func TestUnmarshalJson(t *testing.T) {
@@ -127,7 +133,8 @@ func TestUnmarshalJson(t *testing.T) {
   "path": "${host}/post",
   "method": "POST",
   "headers": {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Accept": ["text/plain", "application/json"]
   },
   "body": {
     "key": "value"
@@ -140,4 +147,7 @@ func TestUnmarshalJson(t *testing.T) {
 	err := json.Unmarshal([]byte(data), &requestData)
 
 	assert.NoError(t, err)
+	assert.Equal(t, len(requestData.Headers), 2)
+	assert.Equal(t, requestData.Headers["Accept"][0], "text/plain")
+	assert.Equal(t, requestData.Headers["Accept"][1], "application/json")
 }
