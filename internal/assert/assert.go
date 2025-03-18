@@ -74,6 +74,6 @@ func StringContains(t *testing.T, value, expected string) {
 	t.Helper()
 
 	if !strings.Contains(value, expected) {
-		t.Fatalf("does not contain; got: %v; want to contain: %v", value, expected)
+		t.Errorf("does not contain; got: %v; want to contain: %v", value, expected)
 	}
 }
