@@ -44,7 +44,7 @@ func TestNormalizeHttpMethod(t *testing.T) {
 			value: "delete",
 		},
 		{
-			name:  "case insensetive",
+			name:  "case insensitive",
 			want:  http.MethodGet,
 			value: "gEt",
 		},
