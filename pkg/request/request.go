@@ -2,6 +2,7 @@ package request
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -12,18 +13,18 @@ import (
 )
 
 type RequestData struct {
-	Method    string            `json:"method" yaml:"method"`
-	Path      string            `json:"path" yaml:"path"`
-	Body      ByteBody          `json:"body" yaml:"body"`
-	Headers   map[string]string `json:"headers" yaml:"headers"`
-	Variables map[string]string `json:"variables" yaml:"variables"`
+	Method    string                        `json:"method" yaml:"method"`
+	Path      string                        `json:"path" yaml:"path"`
+	Body      ByteBody                      `json:"body" yaml:"body"`
+	Headers   map[string]StringOrStringList `json:"headers" yaml:"headers"`
+	Variables map[string]string             `json:"variables" yaml:"variables"`
 }
 
 type Request struct {
 	Method    string
 	Path      string
 	Body      []byte
-	Headers   map[string]string
+	Headers   map[string]StringOrStringList
 	Variables map[string]string
 }
 
@@ -48,6 +49,38 @@ func (b *ByteBody) UnmarshalYAML(value *yaml.Node) error {
 	*b = ByteBody(jsonData)
 
 	return nil
+}
+
+type StringOrStringList []string
+
+func (s *StringOrStringList) UnmarshalJSON(data []byte) error {
+	var single string
+	if err := json.Unmarshal(data, &single); err == nil {
+		*s = []string{single}
+		return nil
+	}
+
+	var multiple []string
+	if err := json.Unmarshal(data, &multiple); err == nil {
+		*s = multiple
+		return nil
+	}
+
+	return fmt.Errorf("invalid format")
+}
+
+func (s *StringOrStringList) UnmarshalYAML(value *yaml.Node) error {
+	var raw interface{}
+	if err := value.Decode(&raw); err != nil {
+		return err
+	}
+
+	jsonData, err := json.Marshal(raw)
+	if err != nil {
+		return err
+	}
+
+	return s.UnmarshalJSON(jsonData)
 }
 
 func LoadRequest(itemPath string) (*Request, error) {
@@ -93,12 +126,18 @@ func (r *Request) resolvePathParameters(variables map[string]string) {
 
 func (r *Request) resolveHeaderParameters(variables map[string]string) {
 	for key, value := range r.Headers {
-		initialHeaderValue := r.Headers[strings.ToLower(key)]
-		r.Headers[strings.ToLower(key)] = param.Param(value).Resolve(variables)
+		var resolvedValues []string
 
-		if initialHeaderValue == r.Headers[strings.ToLower(key)] {
-			r.Headers[strings.ToLower(key)] = param.Param(value).Resolve(r.Variables)
+		for _, v := range value {
+			resolved := param.Param(v).Resolve(variables)
+			if resolved == v {
+				resolved = param.Param(v).Resolve(r.Variables)
+			}
+
+			resolvedValues = append(resolvedValues, resolved)
 		}
+
+		r.Headers[strings.ToLower(key)] = resolvedValues
 	}
 }
 
@@ -134,7 +173,7 @@ func (r *Request) ToHttpRequest() (*http.Request, error) {
 	}
 
 	for key, value := range r.Headers {
-		request.Header.Set(key, value)
+		request.Header[key] = value
 	}
 
 	return request, nil

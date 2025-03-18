@@ -30,8 +30,8 @@ func FlattenMap(input map[string]interface{}, prefix string) map[string]string {
 	return flattened
 }
 
-func CombineMaps(input ...map[string]string) map[string]string {
-	finalMap := map[string]string{}
+func CombineMaps[T any](input ...map[string]T) map[string]T {
+	finalMap := map[string]T{}
 	for _, m := range input {
 		maps.Copy(finalMap, m)
 	}

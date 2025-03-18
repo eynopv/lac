@@ -34,9 +34,9 @@ func runRequest(
 	headers map[string]string,
 	client *client.Client,
 ) {
-	resolvedHeaders := map[string]string{}
+	resolvedHeaders := map[string]request.StringOrStringList{}
 	for key, value := range headers {
-		resolvedHeaders[key] = param.Param(value).Resolve(variables)
+		resolvedHeaders[key] = []string{param.Param(value).Resolve(variables)}
 	}
 
 	req.Headers = utils.CombineMaps(resolvedHeaders, req.Headers)
