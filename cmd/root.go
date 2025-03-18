@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/joho/godotenv"
@@ -17,7 +19,7 @@ var (
 		Version: version,
 		Args:    cobra.ExactArgs(1),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			_ = godotenv.Load(EnvironmentFilePathInput)
+			loadEnv()
 
 			ClientConfig.PrinterConfig.PrintResponseBody = strings.Contains(PrintParameters, "b")
 			ClientConfig.PrinterConfig.PrintResponseHeaders = strings.Contains(PrintParameters, "h")
@@ -100,4 +102,11 @@ func prepareHeaders() error {
 	}
 
 	return nil
+}
+
+func loadEnv() {
+	err := godotenv.Load(EnvironmentFilePathInput)
+	if err != nil && !os.IsNotExist(errors.Unwrap(err)) {
+		fmt.Printf("Unable to load environment file: %v\n", err)
+	}
 }
