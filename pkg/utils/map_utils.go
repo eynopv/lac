@@ -35,5 +35,6 @@ func CombineMaps(input ...map[string]string) map[string]string {
 	for _, m := range input {
 		maps.Copy(finalMap, m)
 	}
+
 	return finalMap
 }

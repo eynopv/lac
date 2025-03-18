@@ -4,8 +4,8 @@ build:
 test:
 	go test ./...
 
-watch:
-	./scripts/test_watch.sh
+lint:
+	golangci-lint run
 
 clean:
 	go clean

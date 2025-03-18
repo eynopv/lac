@@ -2,6 +2,8 @@ package printer
 
 import (
 	"testing"
+
+	"github.com/eynopv/lac/internal/assert"
 )
 
 func TestToPrettyJsonString(t *testing.T) {
@@ -16,7 +18,5 @@ func TestToPrettyJsonString(t *testing.T) {
 	}
 
 	_, err := ToPrettyJsonString(m)
-	if err != nil {
-		t.Fatalf(err.Error())
-	}
+	assert.NoError(t, err)
 }

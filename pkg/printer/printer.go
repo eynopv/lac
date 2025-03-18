@@ -3,7 +3,40 @@ package printer
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
 )
+
+type PrinterConfig struct {
+	PrintResponseBody    bool
+	PrintResponseHeaders bool
+	PrintRequestBody     bool
+	PrintRequestHeaders  bool
+}
+
+type Printer struct {
+	config PrinterConfig
+}
+
+func NewPrinter(config PrinterConfig) Printer {
+	return Printer{
+		config: config,
+	}
+}
+
+func PrintHeaders(headers http.Header) {
+	fmt.Print(StringifyHeaders(headers))
+	fmt.Print("\n")
+}
+
+func StringifyHeaders(headers http.Header) string {
+	var s []string
+	for key, value := range headers {
+		s = append(s, fmt.Sprintf("%s: %s", Cyan(key), strings.Join(value, ", ")))
+	}
+
+	return strings.Join(s, "\n")
+}
 
 func PrintPrettyJson(v any) {
 	prettyJson, err := ToPrettyJsonString(v)
@@ -11,6 +44,7 @@ func PrintPrettyJson(v any) {
 		fmt.Printf("Failed to parse %v to json: %v\n", v, err)
 		return
 	}
+
 	fmt.Println(prettyJson)
 }
 
@@ -19,6 +53,7 @@ func ToPrettyJsonString(v any) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(prettyJson), nil
 }
 

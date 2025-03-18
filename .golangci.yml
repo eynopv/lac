@@ -1,0 +1,13 @@
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - unused
+    - bodyclose
+    - canonicalheader
+    - wsl
+    - errchkjson
+    - errname
+    - gofmt

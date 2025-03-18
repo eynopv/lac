@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
+
+	"github.com/eynopv/lac/internal/assert"
 )
 
 func TestFlattenMap(t *testing.T) {
@@ -23,9 +23,8 @@ func TestFlattenMap(t *testing.T) {
 		"g":     "k",
 	}
 	result := FlattenMap(m, "")
-	if !reflect.DeepEqual(result, expected) {
-		t.Fatalf("\nExpected: " + fmt.Sprint(expected) + "\nReceived: " + fmt.Sprint(result) + "\n")
-	}
+
+	assert.DeepEqual(t, result, expected)
 
 	expected = map[string]string{
 		"prefix.a.b":   "c",
@@ -33,9 +32,7 @@ func TestFlattenMap(t *testing.T) {
 		"prefix.g":     "k",
 	}
 	result = FlattenMap(m, "prefix")
-	if !reflect.DeepEqual(result, expected) {
-		t.Fatalf("\nExpected: " + fmt.Sprint(expected) + "\nReceived: " + fmt.Sprint(result) + "\n")
-	}
+	assert.DeepEqual(t, result, expected)
 }
 
 func TestCombineMaps(t *testing.T) {
@@ -47,10 +44,7 @@ func TestCombineMaps(t *testing.T) {
 		"shouldOverwrite": "overwritten",
 	}
 	m := CombineMaps(m1, m2)
-	if m["shouldNotOverwrite"] != "shouldNotOverwrite" {
-		t.Fatalf("Expected field to no be overwritten")
-	}
-	if m["shouldOverwrite"] == m1["shouldOverwrite"] {
-		t.Fatalf("Expected field to be overwritten")
-	}
+
+	assert.Equal(t, m["shouldNotOverwrite"], m1["shouldNotOverwrite"])
+	assert.Equal(t, m["shouldOverwrite"], m2["shouldOverwrite"])
 }

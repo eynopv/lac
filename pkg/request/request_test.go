@@ -1,29 +1,21 @@
 package request
 
 import (
+	"encoding/json"
 	"net/http"
-	"reflect"
-	"strings"
 	"testing"
+
+	"github.com/eynopv/lac/internal/assert"
+	"gopkg.in/yaml.v3"
 )
 
 func TestNewRequestDefaults(t *testing.T) {
 	request := NewRequest(RequestData{})
-	if request.Path != "" {
-		t.Fatalf("expected path to be empty, got '%s'", request.Path)
-	}
-	if request.Method != "UNKNOWN METHOD" {
-		t.Fatalf("expected method to be 'UNKNOWN METHOD', got '%s'", request.Method)
-	}
-	if request.Body != nil {
-		t.Fatalf("expected body to be empty, got '%v'", request.Body)
-	}
-	if request.Headers != nil {
-		t.Fatalf("expected headers to be empty, got '%v'", request.Headers)
-	}
-	if request.Variables != nil {
-		t.Fatalf("expected variables to be empty, got '%v'", request.Variables)
-	}
+	assert.Equal(t, request.Path, "")
+	assert.Equal(t, request.Method, "GET")
+	assert.DeepEqual(t, request.Body, nil)
+	assert.DeepEqual(t, request.Headers, nil)
+	assert.DeepEqual(t, request.Variables, nil)
 }
 
 func TestNewRequest(t *testing.T) {
@@ -35,21 +27,11 @@ func TestNewRequest(t *testing.T) {
 		Variables: map[string]string{},
 	}
 	request := NewRequest(data)
-	if request.Path != data.Path {
-		t.Fatalf("expected path to be '%s', got '%s'", data.Path, request.Path)
-	}
-	if request.Method != http.MethodGet {
-		t.Fatalf("expected method to be '%s', got '%s'", http.MethodGet, request.Method)
-	}
-	if !reflect.DeepEqual(request.Body, []byte{}) {
-		t.Fatalf("expected body to be empty slice, got '%v'", len(request.Body))
-	}
-	if !reflect.DeepEqual(request.Headers, map[string]string{}) {
-		t.Fatalf("expected headers to be empty map, got '%v'", request.Headers)
-	}
-	if !reflect.DeepEqual(request.Variables, map[string]string{}) {
-		t.Fatalf("expected variables to be empty map, got '%v'", request.Variables)
-	}
+	assert.Equal(t, request.Path, data.Path)
+	assert.Equal(t, request.Method, http.MethodGet)
+	assert.DeepEqual(t, request.Body, data.Body)
+	assert.DeepEqual(t, request.Headers, data.Headers)
+	assert.DeepEqual(t, request.Variables, data.Variables)
 }
 
 func TestRequestResolveParameters(t *testing.T) {
@@ -74,17 +56,9 @@ func TestRequestResolveParameters(t *testing.T) {
 
 	req.ResolveParameters(variables)
 
-	if req.Path != "example.com/api/resolvedId" {
-		t.Fatalf("Path was not resolved: " + req.Path)
-	}
-
-	if req.Headers["x-api-key"] != "resolvedApiKey" {
-		t.Fatalf("Headers were not resolved: " + req.Headers["x-api-key"])
-	}
-
-	if !strings.Contains(string(req.Body), "resolvedValue") {
-		t.Fatalf("Body was not resolved: " + string(req.Body))
-	}
+	assert.Equal(t, req.Path, "example.com/api/resolvedId")
+	assert.Equal(t, req.Headers["x-api-key"], variables["API_KEY"])
+	assert.StringContains(t, string(req.Body), variables["value"])
 }
 
 func TestResolveHeaderParameterFromRequestVariable(t *testing.T) {
@@ -100,9 +74,7 @@ func TestResolveHeaderParameterFromRequestVariable(t *testing.T) {
 	}
 	req.ResolveParameters(nil)
 
-	if req.Headers["var"] != "resolved" {
-		t.Fatalf("headers parameter was not resolved: %v", req.Headers["var"])
-	}
+	assert.Equal(t, req.Headers["var"], "resolved")
 }
 
 func TestResolvePathParameterFromRequestVariable(t *testing.T) {
@@ -114,9 +86,7 @@ func TestResolvePathParameterFromRequestVariable(t *testing.T) {
 		},
 	}
 	req.ResolveParameters(nil)
-	if req.Path == initialPath {
-		t.Fatalf("path was not resolved: %v", req.Path)
-	}
+	assert.NotEqual(t, req.Path, initialPath)
 }
 
 func TestResolveBodyParameterFromRequestVariabes(t *testing.T) {
@@ -128,7 +98,46 @@ func TestResolveBodyParameterFromRequestVariabes(t *testing.T) {
 		},
 	}
 	req.ResolveParameters(nil)
-	if string(req.Body) == initialBody {
-		t.Fatalf("body was not resolved: %v", string(req.Body))
-	}
+	assert.NotEqual(t, string(req.Body), initialBody)
+}
+
+func TestUnmarshalYaml(t *testing.T) {
+	var requestData RequestData
+
+	data := `
+path: ${host}/post
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  key: value
+variables:
+  host: https://example.com
+  `
+	err := yaml.Unmarshal([]byte(data), &requestData)
+
+	assert.NoError(t, err)
+}
+
+func TestUnmarshalJson(t *testing.T) {
+	var requestData RequestData
+
+	data := `
+{
+  "path": "${host}/post",
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "key": "value"
+  },
+  "variables": {
+    "host": "https://example.com"
+  }
+}
+`
+	err := json.Unmarshal([]byte(data), &requestData)
+
+	assert.NoError(t, err)
 }

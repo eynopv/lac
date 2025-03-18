@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/eynopv/lac/internal/assert"
 	"github.com/eynopv/lac/pkg/result"
 )
 
@@ -29,9 +30,7 @@ func TestFailedStatusExpectation(t *testing.T) {
 
 	expectedMessage := fmt.Sprintf("Expected status %v but got %v", expect.Status, result.StatusCode)
 
-	if err.Error() != expectedMessage {
-		t.Fatalf("\nExpected: " + expectedMessage + "\nReceived: " + err.Error() + "\n")
-	}
+	assert.ErrorContains(t, err, expectedMessage)
 }
 
 func TestFailedTimeExpectation(t *testing.T) {
@@ -48,8 +47,5 @@ func TestFailedTimeExpectation(t *testing.T) {
 		expect.TimeLessThan,
 		result.ElapsedTime,
 	)
-
-	if err.Error() != expectedMessage {
-		t.Fatalf("\nExpected: " + expectedMessage + "\nReceived: " + err.Error() + "\n")
-	}
+	assert.ErrorContains(t, err, expectedMessage)
 }
