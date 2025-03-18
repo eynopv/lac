@@ -64,7 +64,7 @@ func LoadRequest(itemPath string) (*Request, error) {
 func NewRequest(data RequestData) Request {
 	method := http.MethodGet
 	if data.Method != "" {
-		method = http_method.StringToHttpMethod(data.Method)
+		method = http_method.NormalizeHttpMethod(data.Method)
 	}
 
 	return Request{

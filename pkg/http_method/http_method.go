@@ -13,7 +13,7 @@ var methodMap = map[string]string{
 	"DELETE": http.MethodDelete,
 }
 
-func StringToHttpMethod(method string) string {
+func NormalizeHttpMethod(method string) string {
 	uppercaseMethod := strings.ToUpper(method)
 
 	if value, ok := methodMap[uppercaseMethod]; ok {

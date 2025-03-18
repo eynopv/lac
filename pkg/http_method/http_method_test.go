@@ -7,7 +7,7 @@ import (
 	"github.com/eynopv/lac/internal/assert"
 )
 
-func TestStringToHttpMethod(t *testing.T) {
+func TestNormalizeHttpMethod(t *testing.T) {
 	tests := []struct {
 		name  string
 		want  string
@@ -52,7 +52,7 @@ func TestStringToHttpMethod(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			converted := StringToHttpMethod(tt.value)
+			converted := NormalizeHttpMethod(tt.value)
 			assert.Equal(t, converted, tt.want)
 		})
 	}
