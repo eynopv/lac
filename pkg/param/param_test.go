@@ -13,7 +13,7 @@ func TestReplacePrefixWithEnv(t *testing.T) {
 
 	param := Param("${TEST_ENV_VAR}World")
 	expected := "HelloWorld"
-	result := param.Resolve(nil)
+	result := param.Resolve(nil, true)
 	assert.Equal(t, result, expected)
 }
 
@@ -23,7 +23,7 @@ func TestReplacePostfixWithEnv(t *testing.T) {
 
 	param := Param("Hello${TEST_ENV_VAR}")
 	expected := "HelloWorld"
-	result := param.Resolve(nil)
+	result := param.Resolve(nil, true)
 
 	assert.Equal(t, result, expected)
 }
@@ -37,7 +37,7 @@ func TestReplaceMultipleWithEnv(t *testing.T) {
 
 	param := Param("${TEST_VAR_1}${TEST_VAR_2}")
 	expected := "HelloWorld"
-	result := param.Resolve(nil)
+	result := param.Resolve(nil, true)
 
 	assert.Equal(t, result, expected)
 }
@@ -49,7 +49,7 @@ func TestReplaceMultipleWithReplacements(t *testing.T) {
 		"replacement_2": "World",
 	}
 	expected := "Hello, World!"
-	result := param.Resolve(replacements)
+	result := param.Resolve(replacements, true)
 
 	assert.Equal(t, result, expected)
 }

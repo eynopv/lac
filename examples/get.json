@@ -1,8 +1,5 @@
 {
   "$schema": "https://raw.githubusercontent.com/eynopv/lac/master/docs/json-schemas/request.schema.json",
   "path": "${host}/get",
-  "method": "GET",
-  "variables": {
-    "host": "https://httpbin.org"
-  }
+  "method": "GET"
 }
