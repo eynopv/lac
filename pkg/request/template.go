@@ -3,6 +3,7 @@ package request
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -41,7 +42,7 @@ func (t *Template) Parse() (*Request, error) {
 	}
 
 	if err != nil {
-		return nil, ErrTemplateParse
+		return nil, fmt.Errorf("%w: %v", ErrTemplateParse, err)
 	}
 
 	nr := NewRequest(requestData)
