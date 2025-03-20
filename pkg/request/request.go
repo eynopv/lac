@@ -3,29 +3,26 @@ package request
 import (
 	"encoding/json"
 	"fmt"
+	yaml "gopkg.in/yaml.v3"
 	"net/http"
 	"strings"
 
 	"github.com/eynopv/lac/pkg/http_method"
-	"github.com/eynopv/lac/pkg/param"
 	"github.com/eynopv/lac/pkg/utils"
-	yaml "gopkg.in/yaml.v3"
 )
 
 type RequestData struct {
-	Method    string                        `json:"method" yaml:"method"`
-	Path      string                        `json:"path" yaml:"path"`
-	Body      ByteBody                      `json:"body" yaml:"body"`
-	Headers   map[string]StringOrStringList `json:"headers" yaml:"headers"`
-	Variables map[string]string             `json:"variables" yaml:"variables"`
+	Method  string                        `json:"method" yaml:"method"`
+	Path    string                        `json:"path" yaml:"path"`
+	Body    ByteBody                      `json:"body" yaml:"body"`
+	Headers map[string]StringOrStringList `json:"headers" yaml:"headers"`
 }
 
 type Request struct {
-	Method    string
-	Path      string
-	Body      []byte
-	Headers   map[string]StringOrStringList
-	Variables map[string]string
+	Method  string
+	Path    string
+	Body    []byte
+	Headers map[string]StringOrStringList
 }
 
 type ByteBody []byte
@@ -101,56 +98,10 @@ func NewRequest(data RequestData) Request {
 	}
 
 	return Request{
-		Method:    method,
-		Path:      data.Path,
-		Body:      data.Body,
-		Headers:   data.Headers,
-		Variables: data.Variables,
-	}
-}
-
-func (r *Request) ResolveParameters(variables map[string]string) {
-	r.resolvePathParameters(variables)
-	r.resolveHeaderParameters(variables)
-	r.resolveBodyParameters(variables)
-}
-
-func (r *Request) resolvePathParameters(variables map[string]string) {
-	initialPath := r.Path
-	r.Path = param.Param(r.Path).Resolve(variables)
-
-	if r.Path == initialPath {
-		r.Path = param.Param(r.Path).Resolve(r.Variables)
-	}
-}
-
-func (r *Request) resolveHeaderParameters(variables map[string]string) {
-	for key, value := range r.Headers {
-		var resolvedValues []string
-
-		for _, v := range value {
-			resolved := param.Param(v).Resolve(variables)
-			if resolved == v {
-				resolved = param.Param(v).Resolve(r.Variables)
-			}
-
-			resolvedValues = append(resolvedValues, resolved)
-		}
-
-		r.Headers[strings.ToLower(key)] = resolvedValues
-	}
-}
-
-func (r *Request) resolveBodyParameters(variables map[string]string) {
-	if len(r.Body) != 0 {
-		initialBody := string(r.Body)
-		stringBody := param.Param(string(r.Body)).Resolve(variables)
-
-		if initialBody == stringBody {
-			stringBody = param.Param(string(r.Body)).Resolve(r.Variables)
-		}
-
-		r.Body = []byte(stringBody)
+		Method:  method,
+		Path:    data.Path,
+		Body:    data.Body,
+		Headers: data.Headers,
 	}
 }
 

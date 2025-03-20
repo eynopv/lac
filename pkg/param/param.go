@@ -7,7 +7,7 @@ import (
 
 type Param string
 
-func (p Param) Resolve(replacements map[string]string) string {
+func (p Param) Resolve(replacements map[string]string, useEnv bool) string {
 	re := regexp.MustCompile(`\${([^}]+)}`)
 
 	replaced := re.ReplaceAllStringFunc(string(p), func(match string) string {
@@ -19,8 +19,10 @@ func (p Param) Resolve(replacements map[string]string) string {
 			}
 		}
 
-		if value, ok := os.LookupEnv(placeholder); ok {
-			return value
+		if useEnv {
+			if value, ok := os.LookupEnv(placeholder); ok {
+				return value
+			}
 		}
 
 		return match

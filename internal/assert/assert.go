@@ -57,7 +57,7 @@ func ErrorContains(t *testing.T, err error, expected string) {
 func Nil(t *testing.T, value any) {
 	t.Helper()
 
-	if value != nil {
+	if value != nil && !reflect.ValueOf(value).IsNil() {
 		t.Errorf("expected nil; got %v", value)
 	}
 }
@@ -65,7 +65,7 @@ func Nil(t *testing.T, value any) {
 func NotNil(t *testing.T, value any) {
 	t.Helper()
 
-	if value == nil {
+	if value == nil || reflect.ValueOf(value).IsNil() {
 		t.Errorf("expected not nil")
 	}
 }

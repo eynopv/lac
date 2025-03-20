@@ -19,7 +19,15 @@ func runCommandFunction(
 	headers map[string]string,
 	clientConfig *client.ClientConfig,
 ) {
-	req, err := request.LoadRequest(args[0])
+	requestTemplate, err := request.NewTemplate(args[0])
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	requestTemplate = requestTemplate.Interpolate(variables, true)
+
+	req, err := requestTemplate.Parse()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -36,11 +44,10 @@ func runRequest(
 ) {
 	resolvedHeaders := map[string]request.StringOrStringList{}
 	for key, value := range headers {
-		resolvedHeaders[key] = []string{param.Param(value).Resolve(variables)}
+		resolvedHeaders[key] = []string{param.Param(value).Resolve(variables, true)}
 	}
 
 	req.Headers = utils.CombineMaps(resolvedHeaders, req.Headers)
-	req.ResolveParameters(variables)
 
 	result, err := client.Do(req)
 
