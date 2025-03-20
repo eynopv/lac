@@ -44,8 +44,6 @@ headers:
     - application/json
 body:
   key: value
-variables:
-  host: https://example.com
   `
 	err := yaml.Unmarshal([]byte(data), &requestData)
 
@@ -68,9 +66,6 @@ func TestUnmarshalJson(t *testing.T) {
   },
   "body": {
     "key": "value"
-  },
-  "variables": {
-    "host": "https://example.com"
   }
 }
 `
