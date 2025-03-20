@@ -42,6 +42,17 @@ func TestReplaceMultipleWithEnv(t *testing.T) {
 	assert.Equal(t, result, expected)
 }
 
+func TestResolveWithoutEnv(t *testing.T) {
+	os.Setenv("TEST_ENV_VAR", "Hello")
+	defer os.Unsetenv("TEST_ENV_VAR")
+
+	param := Param("${TEST_ENV_VAR}World")
+	expected := "${TEST_ENV_VAR}World"
+	result := param.Resolve(nil, false)
+
+	assert.Equal(t, result, expected)
+}
+
 func TestReplaceMultipleWithReplacements(t *testing.T) {
 	param := Param("${replacement_1}, ${replacement_2}!")
 	replacements := map[string]string{
