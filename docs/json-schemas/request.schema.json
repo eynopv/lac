@@ -5,6 +5,10 @@
   "description": "A schema of lac request",
   "type": "object",
   "properties": {
+    "auth": {
+      "type": "object",
+      "description": "Request authentication"
+    },
     "method": {
       "type": "string",
       "description": "HTTP method",
@@ -20,10 +24,6 @@
     "headers": {
       "type": "object",
       "description": "Headers as map of strings"
-    },
-    "variables": {
-      "type": "object",
-      "description": "Values of variables as map of strings"
     }
   }
 }
