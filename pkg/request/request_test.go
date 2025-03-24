@@ -14,7 +14,7 @@ func TestNewRequestDefaults(t *testing.T) {
 	assert.Equal(t, request.Path, "")
 	assert.Equal(t, request.Method, "GET")
 	assert.DeepEqual(t, request.Body, nil)
-	assert.DeepEqual(t, request.Headers, nil)
+	assert.True(t, request.Headers == nil)
 }
 
 func TestNewRequest(t *testing.T) {
@@ -29,6 +29,17 @@ func TestNewRequest(t *testing.T) {
 	assert.Equal(t, request.Method, http.MethodGet)
 	assert.DeepEqual(t, request.Body, data.Body)
 	assert.DeepEqual(t, request.Headers, data.Headers)
+}
+
+func TestNewRequestCanonicalHeaders(t *testing.T) {
+	data := RequestData{
+		Headers: map[string]StringOrStringList{
+			"canonical-header": []string{"value"},
+		},
+	}
+	request := NewRequest(data)
+	assert.Equal(t, len(request.Headers["Canonical-Header"]), 1)
+	assert.Equal(t, request.Headers["Canonical-Header"][0], "value")
 }
 
 func TestUnmarshalYaml(t *testing.T) {

@@ -77,3 +77,11 @@ func StringContains(t *testing.T, value, expected string) {
 		t.Errorf("does not contain; got: %v; want to contain: %v", value, expected)
 	}
 }
+
+func True(t *testing.T, actual bool) {
+	t.Helper()
+
+	if !actual {
+		t.Errorf("expeted true")
+	}
+}
