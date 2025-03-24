@@ -82,6 +82,6 @@ func True(t *testing.T, actual bool) {
 	t.Helper()
 
 	if !actual {
-		t.Errorf("expeted true")
+		t.Errorf("expected true")
 	}
 }
