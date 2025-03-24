@@ -5,6 +5,10 @@
   "description": "A schema of lac request",
   "type": "object",
   "properties": {
+    "auth": {
+      "type": "object",
+      "description": "Request authentication"
+    },
     "method": {
       "type": "string",
       "description": "HTTP method",
