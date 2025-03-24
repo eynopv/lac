@@ -49,7 +49,7 @@ var (
 	ClientConfig client.ClientConfig
 	Variables    = map[string]string{}
 	Headers      = map[string]string{
-		"user-agent": fmt.Sprintf("lac/%s", version),
+		"User-Agent": fmt.Sprintf("lac/%s", version),
 	}
 )
 
