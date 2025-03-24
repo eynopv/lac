@@ -41,5 +41,7 @@ func NewBasicAuth(t *Template) (*BasicAuth, error) {
 }
 
 func (bs *BasicAuth) Apply(r *http.Request) {
-	r.SetBasicAuth(bs.Username, bs.Password)
+	if bs != nil {
+		r.SetBasicAuth(bs.Username, bs.Password)
+	}
 }
