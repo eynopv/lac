@@ -41,7 +41,7 @@ func NewResult(
 
 	if len(bodyRaw) > 0 {
 		contentType := headers.Get("Content-Type")
-		if strings.Contains(contentType, "application/json") {
+		if strings.Contains(contentType, "json") {
 			var responseData map[string]interface{}
 			err := json.Unmarshal(bodyRaw, &responseData)
 			if err != nil {
