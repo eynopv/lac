@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: en-US
-tone_instructions: You should use tone like Linus Torvalds
+tone_instructions: ""
 early_access: false
 enable_free_tier: true
 auto_resolve_threads: true
