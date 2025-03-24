@@ -97,6 +97,14 @@ func NewRequest(data RequestData) Request {
 		method = http_method.NormalizeHttpMethod(data.Method)
 	}
 
+	headers := map[string]StringOrStringList{}
+
+	if data.Headers != nil {
+		for key, value := range data.Headers {
+			headers[http.CanonicalHeaderKey(key)] = value
+		}
+	}
+
 	return Request{
 		Method:  method,
 		Path:    data.Path,
