@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
@@ -97,7 +98,7 @@ func prepareHeaders() error {
 				return fmt.Errorf("Invalid headers input: %v", headersInput)
 			}
 
-			Headers[strings.ToLower(keyValue[0])] = keyValue[1]
+			Headers[http.CanonicalHeaderKey(keyValue[0])] = keyValue[1]
 		}
 	}
 
