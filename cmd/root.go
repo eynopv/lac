@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
@@ -49,7 +50,7 @@ var (
 	ClientConfig client.ClientConfig
 	Variables    = map[string]string{}
 	Headers      = map[string]string{
-		"user-agent": fmt.Sprintf("lac/%s", version),
+		"User-Agent": fmt.Sprintf("lac/%s", version),
 	}
 )
 
@@ -97,7 +98,7 @@ func prepareHeaders() error {
 				return fmt.Errorf("Invalid headers input: %v", headersInput)
 			}
 
-			Headers[strings.ToLower(keyValue[0])] = keyValue[1]
+			Headers[http.CanonicalHeaderKey(keyValue[0])] = keyValue[1]
 		}
 	}
 
