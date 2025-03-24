@@ -33,7 +33,13 @@ func runCommandFunction(
 		os.Exit(1)
 	}
 
-	runRequest(req, variables, headers, client.NewClient(clientConfig))
+	auth, err := request.NewBasicAuth(requestTemplate)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	runRequest(req, variables, headers, client.NewClient(clientConfig), auth)
 }
 
 func runRequest(
@@ -41,6 +47,7 @@ func runRequest(
 	variables map[string]string,
 	headers map[string]string,
 	client *client.Client,
+	auth *request.BasicAuth,
 ) {
 	resolvedHeaders := map[string]request.StringOrStringList{}
 	for key, value := range headers {
@@ -49,7 +56,7 @@ func runRequest(
 
 	req.Headers = utils.CombineMaps(resolvedHeaders, req.Headers)
 
-	result, err := client.Do(req)
+	result, err := client.Do(req, auth)
 
 	if err != nil {
 		fmt.Printf("Error sending request: %v\n", err)
