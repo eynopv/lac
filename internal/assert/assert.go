@@ -85,3 +85,11 @@ func True(t *testing.T, actual bool) {
 		t.Errorf("expected true")
 	}
 }
+
+func False(t *testing.T, actual bool) {
+	t.Helper()
+
+	if actual {
+		t.Errorf("expected false")
+	}
+}
