@@ -33,7 +33,7 @@ func runCommandFunction(
 		os.Exit(1)
 	}
 
-	auth, err := request.NewBasicAuth(requestTemplate)
+	auth, err := request.NewAuth(requestTemplate)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -47,7 +47,7 @@ func runRequest(
 	variables map[string]string,
 	headers map[string]string,
 	client *client.Client,
-	auth *request.BasicAuth,
+	auth request.Auth,
 ) {
 	resolvedHeaders := map[string]request.StringOrStringList{}
 	for key, value := range headers {
