@@ -30,7 +30,7 @@ func NewClient(config *ClientConfig) *Client {
 	}
 }
 
-func (c *Client) Do(r *request.Request, auth *request.BasicAuth) (*result.Result, error) {
+func (c *Client) Do(r *request.Request, auth request.Auth) (*result.Result, error) {
 	request, err := r.ToHttpRequest()
 	if err != nil {
 		return nil, err
