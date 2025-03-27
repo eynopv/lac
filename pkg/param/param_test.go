@@ -55,7 +55,7 @@ func TestResolveWithoutEnv(t *testing.T) {
 
 func TestReplaceMultipleWithReplacements(t *testing.T) {
 	param := Param("${replacement_1}, ${replacement_2}!")
-	replacements := map[string]string{
+	replacements := map[string]interface{}{
 		"replacement_1": "Hello",
 		"replacement_2": "World",
 	}

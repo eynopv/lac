@@ -28,7 +28,7 @@ func NewTemplate(templatePath string) (*Template, error) {
 	return &result, nil
 }
 
-func (t *Template) Interpolate(vars map[string]string, useEnv bool) *Template {
+func (t *Template) Interpolate(vars map[string]interface{}, useEnv bool) *Template {
 	result := Template(param.Param(*t).Resolve(vars, true))
 	return &result
 }

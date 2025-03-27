@@ -3,11 +3,13 @@ package param
 import (
 	"os"
 	"regexp"
+
+	"github.com/eynopv/lac/pkg/utils"
 )
 
 type Param string
 
-func (p Param) Resolve(replacements map[string]string, useEnv bool) string {
+func (p Param) Resolve(replacements map[string]interface{}, useEnv bool) string {
 	re := regexp.MustCompile(`\${([^}]+)}`)
 
 	replaced := re.ReplaceAllStringFunc(string(p), func(match string) string {
@@ -15,7 +17,12 @@ func (p Param) Resolve(replacements map[string]string, useEnv bool) string {
 
 		if replacements != nil {
 			if value, ok := replacements[placeholder]; ok {
-				return value
+				stringValue, err := utils.ToString(value)
+				if err != nil {
+					panic(err)
+				}
+
+				return stringValue
 			}
 		}
 

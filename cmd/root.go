@@ -48,7 +48,7 @@ var (
 	PrintParameters          string
 
 	ClientConfig client.ClientConfig
-	Variables    = map[string]string{}
+	Variables    = map[string]interface{}{}
 	Headers      = map[string]string{
 		"User-Agent": fmt.Sprintf("lac/%s", version),
 	}

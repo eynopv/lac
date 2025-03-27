@@ -21,7 +21,7 @@ func TestNewTemplate(t *testing.T) {
 	assert.Equal(t, *template, "Template Content")
 }
 
-func TestTemplateParse(t *testing.T) {
+func TestTemplate_Parse(t *testing.T) {
 	t.Run("yaml", func(t *testing.T) {
 		data := `
 path: ${host}/post
@@ -73,4 +73,44 @@ body:
 		assert.Error(t, err)
 		assert.Nil(t, request)
 	})
+}
+
+func TestTemplate_Interpolate(t *testing.T) {
+	tests := []struct {
+		name    string
+		content string
+		want    Template
+	}{
+		{
+			name:    "json",
+			content: `{"string": "${string}", "number": "${number}"}`,
+			want:    Template(`{"string": "hello, world", "number": "7"}`), // TODO: this should be actual number, but right now it is fine
+		},
+		{
+			name: "yaml",
+			content: `
+			string: ${string}
+			number: ${number}
+			`,
+			want: Template(`
+			string: hello, world
+			number: 7
+			`),
+		},
+	}
+
+	vars := map[string]interface{}{
+		"string": "hello, world",
+		"number": 7,
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			template := Template(tt.content)
+
+			got := template.Interpolate(vars, false)
+
+			assert.Equal(t, *got, tt.want)
+		})
+	}
 }
