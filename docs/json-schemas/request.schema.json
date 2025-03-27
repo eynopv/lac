@@ -6,19 +6,41 @@
   "type": "object",
   "properties": {
     "auth": {
-      "type": "object",
-      "description": "Basic authentication",
-      "properties": {
-        "username": {
-          "type": "string",
-          "description": "Username for basic authentication"
+      "description": "Request authentication",
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Basic authentication",
+          "properties": {
+            "type": {
+              "const": "basic"
+            },
+            "username": {
+              "type": "string",
+              "description": "Username for basic authentication"
+            },
+            "password": {
+              "type": "string",
+              "description": "Password for basic authentication"
+            }
+          },
+          "required": ["type", "username", "password"]
         },
-        "password": {
-          "type": "string",
-          "description": "Password for basic authentication"
+        {
+          "type": "object",
+          "description": "Bearer authentication",
+          "properties": {
+            "type": {
+              "const": "bearer"
+            },
+            "token": {
+              "type": "string",
+              "description": "Bearer token for authentication"
+            }
+          },
+          "required": ["type", "token"]
         }
-      },
-      "required": ["username", "password"]
+      ]
     },
     "method": {
       "type": "string",
