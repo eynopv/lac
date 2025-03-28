@@ -1,6 +1,7 @@
 package request
 
 import (
+	"os"
 	"testing"
 
 	"github.com/eynopv/lac/internal/assert"
@@ -21,7 +22,7 @@ func TestNewTemplate(t *testing.T) {
 	assert.Equal(t, *template, "Template Content")
 }
 
-func TestTemplateParse(t *testing.T) {
+func TestTemplate_Parse(t *testing.T) {
 	t.Run("yaml", func(t *testing.T) {
 		data := `
 path: ${host}/post
@@ -73,4 +74,54 @@ body:
 		assert.Error(t, err)
 		assert.Nil(t, request)
 	})
+}
+
+func TestTemplate_Interpolate(t *testing.T) {
+	tests := []struct {
+		name    string
+		content string
+		want    Template
+	}{
+		{
+			name:    "json",
+			content: `{"string": "${string}", "number": "${number}", "env_string": "${ENV_VAR}"}`,
+			want:    Template(`{"string": "hello, world", "number": 7, "env_string": "dlrow, olleh"}`),
+		},
+		{
+			name: "yaml",
+			content: `
+			string: ${string}
+			number: ${number}
+			env_string: ${ENV_VAR}
+			`,
+			want: Template(`
+			string: hello, world
+			number: 7
+			env_string: dlrow, olleh
+			`),
+		},
+		{
+			name:    "form body",
+			content: `{"body": "value=${string}&envValue=${ENV_VAR}"}`,
+			want:    Template(`{"body": "value=hello, world&envValue=dlrow, olleh"}`),
+		},
+	}
+
+	vars := map[string]interface{}{
+		"string": "hello, world",
+		"number": 7,
+	}
+
+	os.Setenv("ENV_VAR", "dlrow, olleh")
+	defer os.Unsetenv("ENV_VAR")
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			template := Template(tt.content)
+
+			got := template.Interpolate(vars, false)
+
+			assert.Equal(t, *got, tt.want)
+		})
+	}
 }

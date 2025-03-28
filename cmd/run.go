@@ -15,7 +15,7 @@ import (
 
 func runCommandFunction(
 	args []string,
-	variables map[string]string,
+	variables map[string]interface{},
 	headers map[string]string,
 	clientConfig *client.ClientConfig,
 ) {
@@ -44,7 +44,7 @@ func runCommandFunction(
 
 func runRequest(
 	req *request.Request,
-	variables map[string]string,
+	variables map[string]interface{},
 	headers map[string]string,
 	client *client.Client,
 	auth request.Auth,

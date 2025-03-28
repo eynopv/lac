@@ -55,12 +55,71 @@ func TestResolveWithoutEnv(t *testing.T) {
 
 func TestReplaceMultipleWithReplacements(t *testing.T) {
 	param := Param("${replacement_1}, ${replacement_2}!")
-	replacements := map[string]string{
+	replacements := map[string]interface{}{
 		"replacement_1": "Hello",
 		"replacement_2": "World",
 	}
 	expected := "Hello, World!"
 	result := param.Resolve(replacements, true)
+
+	assert.Equal(t, result, expected)
+}
+
+func TestReplaceWithNumericValues(t *testing.T) {
+	param := Param("The answer is ${number} and I have ${float_num} dollars")
+
+	replacements := map[string]interface{}{
+		"number":    42,
+		"float_num": 10.5,
+	}
+
+	expected := "The answer is 42 and I have 10.5 dollars"
+	result := param.Resolve(replacements, true)
+
+	assert.Equal(t, result, expected)
+}
+
+func TestReplaceWithBooleanValues(t *testing.T) {
+	param := Param("The statement is ${bool_value}")
+	replacements := map[string]interface{}{
+		"bool_value": true,
+	}
+	expected := "The statement is true"
+	result := param.Resolve(replacements, true)
+
+	assert.Equal(t, result, expected)
+}
+
+func TestReplaceWithNullValues(t *testing.T) {
+	param := Param("Is it ${null_value}")
+	replacements := map[string]interface{}{
+		"null_value": nil,
+	}
+	expected := "Is it null"
+	result := param.Resolve(replacements, true)
+
+	assert.Equal(t, result, expected)
+}
+
+func TestReplaceWithQuotedString(t *testing.T) {
+	param := Param(`"${value}"`)
+	replacements := map[string]interface{}{
+		"value": "Hello, World",
+	}
+	expected := `"Hello, World"`
+	result := param.Resolve(replacements, true)
+
+	assert.Equal(t, result, expected)
+}
+
+func TestReplaceWithQuotesStringFromEnv(t *testing.T) {
+	param := Param(`"${TEST_VAR}"`)
+
+	os.Setenv("TEST_VAR", "Hello, World")
+	defer os.Unsetenv("TEST_VAR")
+
+	expected := `"Hello, World"`
+	result := param.Resolve(nil, true)
 
 	assert.Equal(t, result, expected)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/joho/godotenv"
@@ -48,7 +49,7 @@ var (
 	PrintParameters          string
 
 	ClientConfig client.ClientConfig
-	Variables    = map[string]string{}
+	Variables    = map[string]interface{}{}
 	Headers      = map[string]string{
 		"User-Agent": fmt.Sprintf("lac/%s", version),
 	}
@@ -82,7 +83,18 @@ func prepareVariables() error {
 				return fmt.Errorf("Invalid variables input: %v", variableInput)
 			}
 
-			Variables[keyValue[0]] = keyValue[1]
+			value := keyValue[1]
+			if value == "true" {
+				Variables[keyValue[0]] = true
+			} else if value == "false" {
+				Variables[keyValue[0]] = false
+			} else if parsedInt, err := strconv.ParseInt(value, 10, 64); err == nil {
+				Variables[keyValue[0]] = parsedInt
+			} else if parsedFloat, err := strconv.ParseFloat(value, 64); err == nil {
+				Variables[keyValue[0]] = parsedFloat
+			} else {
+				Variables[keyValue[0]] = value
+			}
 		}
 	}
 
