@@ -1,9 +1,4 @@
-on:
-  push:
-    branches:
-      - master
-      - dev
-      - "v*.*.*"
+on: push
 
 jobs:
   test:
