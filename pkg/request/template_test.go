@@ -1,6 +1,7 @@
 package request
 
 import (
+	"os"
 	"testing"
 
 	"github.com/eynopv/lac/internal/assert"
@@ -83,19 +84,26 @@ func TestTemplate_Interpolate(t *testing.T) {
 	}{
 		{
 			name:    "json",
-			content: `{"string": "${string}", "number": "${number}"}`,
-			want:    Template(`{"string": "hello, world", "number": "7"}`), // TODO: this should be actual number, but right now it is fine
+			content: `{"string": "${string}", "number": "${number}", "env_string": "${ENV_VAR}"}`,
+			want:    Template(`{"string": "hello, world", "number": 7, "env_string": "dlrow, olleh"}`),
 		},
 		{
 			name: "yaml",
 			content: `
 			string: ${string}
 			number: ${number}
+			env_string: ${ENV_VAR}
 			`,
 			want: Template(`
 			string: hello, world
 			number: 7
+			env_string: dlrow, olleh
 			`),
+		},
+		{
+			name:    "form body",
+			content: `{"body": "value=${string}&envValue=${ENV_VAR}"}`,
+			want:    Template(`{"body": "value=hello, world&envValue=dlrow, olleh"}`),
 		},
 	}
 
@@ -103,6 +111,9 @@ func TestTemplate_Interpolate(t *testing.T) {
 		"string": "hello, world",
 		"number": 7,
 	}
+
+	os.Setenv("ENV_VAR", "dlrow, olleh")
+	defer os.Unsetenv("ENV_VAR")
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
