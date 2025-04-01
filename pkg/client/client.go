@@ -7,6 +7,7 @@ import (
 
 	"github.com/eynopv/lac/pkg/printer"
 	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/request/authentication"
 	"github.com/eynopv/lac/pkg/result"
 )
 
@@ -30,7 +31,7 @@ func NewClient(config *ClientConfig) *Client {
 	}
 }
 
-func (c *Client) Do(r *request.Request, auth request.Auth) (*result.Result, error) {
+func (c *Client) Do(r *request.Request, auth authentication.Auth) (*result.Result, error) {
 	request, err := r.ToHttpRequest()
 	if err != nil {
 		return nil, err

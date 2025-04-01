@@ -9,6 +9,7 @@ import (
 	"github.com/eynopv/lac/pkg/param"
 	"github.com/eynopv/lac/pkg/printer"
 	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/request/authentication"
 	"github.com/eynopv/lac/pkg/utils"
 	"github.com/eynopv/lac/pkg/validators"
 )
@@ -33,7 +34,7 @@ func runCommandFunction(
 		os.Exit(1)
 	}
 
-	auth, err := request.NewAuth(requestTemplate)
+	auth, err := authentication.NewAuth(requestTemplate)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -47,7 +48,7 @@ func runRequest(
 	variables map[string]interface{},
 	headers map[string]string,
 	client *client.Client,
-	auth request.Auth,
+	auth authentication.Auth,
 ) {
 	resolvedHeaders := map[string]request.StringOrStringList{}
 	for key, value := range headers {
