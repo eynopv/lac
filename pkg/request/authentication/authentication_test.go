@@ -26,7 +26,7 @@ func TestNewAuth(t *testing.T) {
 		template := request.Template(`
     {
       "auth": {
-        "type": "unknown",
+        "type": "unknown"
       }
     }
     `)
