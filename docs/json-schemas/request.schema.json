@@ -10,6 +10,24 @@
       "oneOf": [
         {
           "type": "object",
+          "description": "API authentication",
+          "properties": {
+            "type": {
+              "const": "api"
+            },
+            "header": {
+              "type": "string",
+              "description": "Header for api authentication"
+            },
+            "key": {
+              "type": "string",
+              "description": "Key for api authentication"
+            }
+          },
+          "required": ["type", "header", "key"]
+        },
+        {
+          "type": "object",
           "description": "Basic authentication",
           "properties": {
             "type": {

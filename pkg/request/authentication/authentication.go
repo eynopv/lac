@@ -14,6 +14,7 @@ import (
 type AuthType string
 
 const (
+	Api    AuthType = "api"
 	Basic  AuthType = "basic"
 	Bearer AuthType = "bearer"
 )
