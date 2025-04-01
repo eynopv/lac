@@ -47,6 +47,8 @@ func NewAuth(t *request.Template) (Auth, error) {
 	}
 
 	switch wrapper.Auth.Type {
+	case Api:
+		return NewApiAuth(t)
 	case Basic:
 		return NewBasicAuth(t)
 	case Bearer:

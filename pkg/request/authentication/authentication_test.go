@@ -79,4 +79,19 @@ func TestNewAuth(t *testing.T) {
 		assert.NotNil(t, auth)
 		assert.Equal(t, auth.GetType(), Bearer)
 	})
+
+	t.Run("api", func(t *testing.T) {
+		template := request.Template(`
+    auth:
+      type: api
+      header: x-api-key
+      key: helloworld
+    `)
+
+		auth, err := NewAuth(&template)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, auth)
+		assert.Equal(t, auth.GetType(), Api)
+	})
 }
