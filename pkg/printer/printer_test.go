@@ -50,12 +50,12 @@ func TestPrinter_Print(t *testing.T) {
 	var buf bytes.Buffer
 
 	oldDestination := destination
-	defer func() { destination = oldDestination }()
 	destination = &buf
-
 	oldIsTerminal := isTerminal
-	defer func() { isTerminal = oldIsTerminal }()
 	isTerminal = false
+
+	defer func() { destination = oldDestination }()
+	defer func() { isTerminal = oldIsTerminal }()
 
 	res := result.Result{
 		Response: &http.Response{
@@ -111,6 +111,7 @@ func TestPrinter_Print(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			buf.Reset()
+
 			p := NewPrinter(tc.config)
 			p.Print(&res)
 
