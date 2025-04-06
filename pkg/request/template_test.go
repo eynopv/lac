@@ -107,7 +107,7 @@ func TestTemplate_Interpolate(t *testing.T) {
 		},
 	}
 
-	vars := map[string]interface{}{
+	vars := map[string]any{
 		"string": "hello, world",
 		"number": 7,
 	}

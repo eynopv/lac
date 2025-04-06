@@ -5,7 +5,7 @@ import (
 	"maps"
 )
 
-func FlattenMap(input map[string]interface{}, prefix string) map[string]string {
+func FlattenMap(input map[string]any, prefix string) map[string]string {
 	flattened := map[string]string{}
 
 	for key, value := range input {
@@ -17,11 +17,9 @@ func FlattenMap(input map[string]interface{}, prefix string) map[string]string {
 		}
 
 		switch child := value.(type) {
-		case map[string]interface{}:
+		case map[string]any:
 			submap := FlattenMap(child, newKey)
-			for k, v := range submap {
-				flattened[k] = v
-			}
+			maps.Copy(flattened, submap)
 		default:
 			flattened[newKey] = fmt.Sprintf("%v", value)
 		}

@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func LoadItem(item string, dst interface{}) error {
+func LoadItem(item string, dst any) error {
 	var (
 		err  error
 		data *[]byte

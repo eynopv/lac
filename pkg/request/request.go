@@ -33,7 +33,7 @@ func (b *ByteBody) UnmarshalJSON(data []byte) error {
 }
 
 func (b *ByteBody) UnmarshalYAML(value *yaml.Node) error {
-	var raw interface{}
+	var raw any
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (s *StringOrStringList) UnmarshalJSON(data []byte) error {
 }
 
 func (s *StringOrStringList) UnmarshalYAML(value *yaml.Node) error {
-	var raw interface{}
+	var raw any
 	if err := value.Decode(&raw); err != nil {
 		return err
 	}
