@@ -2,82 +2,78 @@ package result
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"strings"
 	"time"
-
-	"github.com/eynopv/lac/pkg/printer"
 )
 
 type Result struct {
-	Path        string
-	Status      string
-	StatusCode  int
-	Protocol    string
+	Response     *http.Response
+	ResponseBody []byte
+	RequestBody  []byte
+	Metadata     Metadata
+}
+
+type Metadata struct {
 	ElapsedTime time.Duration
-	Body        map[string]interface{}
-	Text        string
-	Headers     http.Header
 }
 
-func NewResult(
-	elapsedTime time.Duration,
-	path string,
-	status string,
-	statusCode int,
-	headers http.Header,
-	protocol string,
-	bodyRaw []byte,
-) (Result, error) {
-	result := Result{
-		Path:        path,
-		ElapsedTime: elapsedTime,
-		Status:      status,
-		StatusCode:  statusCode,
-		Headers:     headers,
-		Protocol:    protocol,
+func (r Result) StatusLine() *StatusLine {
+	return &StatusLine{
+		Protocol: r.Response.Proto,
+		Status:   r.Response.Status,
+		Time:     r.Metadata.ElapsedTime,
 	}
-
-	if len(bodyRaw) > 0 {
-		contentType := headers.Get("Content-Type")
-		if strings.Contains(contentType, "application/json") {
-			var responseData map[string]interface{}
-
-			err := json.Unmarshal(bodyRaw, &responseData)
-			if err != nil {
-				return result, err
-			}
-
-			result.Body = responseData
-		} else if strings.Contains(contentType, "text/") {
-			result.Text = string(bodyRaw)
-		}
-	}
-
-	return result, nil
 }
 
-func (r *Result) Print(printBody, printHeaders bool) {
-	if printHeaders {
-		if r.StatusCode < 300 {
-			fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Green(r.Status), r.ElapsedTime)
-		} else if r.StatusCode >= 300 && r.StatusCode < 400 {
-			fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Cyan(r.Status), r.ElapsedTime)
-		} else {
-			fmt.Printf("%v %v [%v]\n", r.Protocol, printer.Red(r.Status), r.ElapsedTime)
-		}
+func (r Result) RequestLine() *RequestLine {
+	return &RequestLine{
+		Protocol: r.Response.Request.Proto,
+		Url:      r.Response.Request.URL.String(),
+		Method:   r.Response.Request.Method,
+	}
+}
 
-		printer.PrintHeaders(r.Headers)
+func (r Result) RequestJson() map[string]interface{} {
+	body := r.RequestBody
+
+	var data map[string]interface{}
+	if err := json.Unmarshal(body, &data); err != nil {
+		return nil
 	}
 
-	if printBody {
-		if r.Body != nil {
-			fmt.Println()
-			printer.PrintPrettyJson(r.Body)
-		} else if r.Text != "" {
-			fmt.Println()
-			fmt.Println(r.Text)
-		}
+	return data
+}
+
+func (r Result) RequestText() string {
+	body := r.RequestBody
+	return string(body)
+}
+
+func (r Result) Json() map[string]interface{} {
+	if len(r.ResponseBody) == 0 {
+		return nil
 	}
+
+	var data map[string]interface{}
+	if err := json.Unmarshal(r.ResponseBody, &data); err != nil {
+		return nil
+	}
+
+	return data
+}
+
+func (r Result) Text() string {
+	return string(r.ResponseBody)
+}
+
+type StatusLine struct {
+	Protocol string
+	Status   string
+	Time     time.Duration
+}
+
+type RequestLine struct {
+	Protocol string
+	Url      string
+	Method   string
 }

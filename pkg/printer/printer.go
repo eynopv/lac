@@ -1,10 +1,14 @@
 package printer
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"io"
+	"os"
 	"strings"
+
+	"golang.org/x/term"
+
+	"github.com/eynopv/lac/pkg/result"
 )
 
 type PrinterConfig struct {
@@ -15,68 +19,61 @@ type PrinterConfig struct {
 }
 
 type Printer struct {
-	config PrinterConfig
+	config    PrinterConfig
+	formatter Formatter
 }
+
+var destination io.Writer = os.Stdout
+var isTerminal = term.IsTerminal(int(os.Stdout.Fd()))
 
 func NewPrinter(config PrinterConfig) Printer {
+	formatter := NewFormatter(isTerminal)
+
 	return Printer{
-		config: config,
+		config:    config,
+		formatter: formatter,
 	}
 }
 
-func PrintHeaders(headers http.Header) {
-	fmt.Print(StringifyHeaders(headers))
-	fmt.Print("\n")
-}
+func (p *Printer) Print(res *result.Result) {
+	sections := []string{}
 
-func StringifyHeaders(headers http.Header) string {
-	var s []string
-	for key, value := range headers {
-		s = append(s, fmt.Sprintf("%s: %s", Cyan(key), strings.Join(value, ", ")))
+	if p.config.PrintRequestHeaders {
+		req := *res.Response.Request
+		s := ""
+		s += p.formatter.RequestLine(*res.RequestLine())
+		s += p.formatter.Headers(req.Header)
+		sections = append(sections, s)
 	}
 
-	return strings.Join(s, "\n")
-}
+	if p.config.PrintRequestBody {
+		s := ""
+		if requestJson := res.RequestJson(); requestJson != nil {
+			s += fmt.Sprintf("%v\n", p.formatter.Json(requestJson))
+		} else if requestText := res.RequestText(); requestText != "" {
+			s += fmt.Sprintf("%v\n", requestText)
+		}
 
-func PrintPrettyJson(v any) {
-	prettyJson, err := ToPrettyJsonString(v)
-	if err != nil {
-		fmt.Printf("Failed to parse %v to json: %v\n", v, err)
-		return
+		sections = append(sections, s)
 	}
 
-	fmt.Println(prettyJson)
-}
-
-func ToPrettyJsonString(v any) (string, error) {
-	prettyJson, err := json.MarshalIndent(v, "", " ")
-	if err != nil {
-		return "", err
+	if p.config.PrintResponseHeaders {
+		s := ""
+		s += p.formatter.StatusLine(*res.StatusLine())
+		s += p.formatter.Headers(res.Response.Header)
+		sections = append(sections, s)
 	}
 
-	return string(prettyJson), nil
-}
+	if p.config.PrintResponseBody {
+		s := ""
+		if responseJson := res.Json(); responseJson != nil {
+			s += fmt.Sprintf("%v\n", p.formatter.Json(responseJson))
+		} else if responseText := res.Text(); responseText != "" {
+			s += fmt.Sprintf("%v\n", responseText)
+		}
 
-func Red(s string) string {
-	return ColorRed + s + ColorReset
-}
+		sections = append(sections, s)
+	}
 
-func Green(s string) string {
-	return ColorGreen + s + ColorReset
-}
-
-func Yellow(s string) string {
-	return ColorYellow + s + ColorReset
-}
-
-func Blue(s string) string {
-	return ColorBlue + s + ColorReset
-}
-
-func Magenta(s string) string {
-	return ColorMagenta + s + ColorReset
-}
-
-func Cyan(s string) string {
-	return ColorCyan + s + ColorReset
+	fmt.Fprint(destination, strings.Join(sections, "\n"))
 }
