@@ -55,7 +55,7 @@ func TestResolveWithoutEnv(t *testing.T) {
 
 func TestReplaceMultipleWithReplacements(t *testing.T) {
 	param := Param("${replacement_1}, ${replacement_2}!")
-	replacements := map[string]interface{}{
+	replacements := map[string]any{
 		"replacement_1": "Hello",
 		"replacement_2": "World",
 	}
@@ -68,7 +68,7 @@ func TestReplaceMultipleWithReplacements(t *testing.T) {
 func TestReplaceWithNumericValues(t *testing.T) {
 	param := Param("The answer is ${number} and I have ${float_num} dollars")
 
-	replacements := map[string]interface{}{
+	replacements := map[string]any{
 		"number":    42,
 		"float_num": 10.5,
 	}
@@ -81,7 +81,7 @@ func TestReplaceWithNumericValues(t *testing.T) {
 
 func TestReplaceWithBooleanValues(t *testing.T) {
 	param := Param("The statement is ${bool_value}")
-	replacements := map[string]interface{}{
+	replacements := map[string]any{
 		"bool_value": true,
 	}
 	expected := "The statement is true"
@@ -92,7 +92,7 @@ func TestReplaceWithBooleanValues(t *testing.T) {
 
 func TestReplaceWithNullValues(t *testing.T) {
 	param := Param("Is it ${null_value}")
-	replacements := map[string]interface{}{
+	replacements := map[string]any{
 		"null_value": nil,
 	}
 	expected := "Is it null"
@@ -103,7 +103,7 @@ func TestReplaceWithNullValues(t *testing.T) {
 
 func TestReplaceWithQuotedString(t *testing.T) {
 	param := Param(`"${value}"`)
-	replacements := map[string]interface{}{
+	replacements := map[string]any{
 		"value": "Hello, World",
 	}
 	expected := `"Hello, World"`

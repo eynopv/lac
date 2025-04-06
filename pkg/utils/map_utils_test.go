@@ -7,10 +7,10 @@ import (
 )
 
 func TestFlattenMap(t *testing.T) {
-	m := map[string]interface{}{
-		"a": map[string]interface{}{
+	m := map[string]any{
+		"a": map[string]any{
 			"b": "c",
-			"d": map[string]interface{}{
+			"d": map[string]any{
 				"e": "f",
 			},
 		},
