@@ -43,7 +43,7 @@ func (p *Printer) Print(res *result.Result) {
 	}
 
 	if p.config.PrintRequestBody {
-		sections = append(sections, p.printRequestBody(res))
+		sections = append(sections, p.printBody(&res.RequestBody))
 	}
 
 	if p.config.PrintResponseHeaders {
@@ -51,7 +51,7 @@ func (p *Printer) Print(res *result.Result) {
 	}
 
 	if p.config.PrintResponseBody {
-		sections = append(sections, p.printResponseBody(res))
+		sections = append(sections, p.printBody(&res.ResponseBody))
 	}
 
 	fmt.Fprint(destination, strings.Join(sections, "\n"))
@@ -66,18 +66,6 @@ func (p *Printer) printRequestHeaders(res *result.Result) string {
 	return s
 }
 
-func (p *Printer) printRequestBody(res *result.Result) string {
-	if requestJson := res.RequestJson(); requestJson != nil {
-		return fmt.Sprintf("%v\n", p.formatter.Json(requestJson))
-	}
-
-	if requestText := res.RequestText(); requestText != "" {
-		return fmt.Sprintf("%v\n", requestText)
-	}
-
-	return ""
-}
-
 func (p *Printer) printResponseHeaders(res *result.Result) string {
 	s := ""
 	s += p.formatter.StatusLine(*res.StatusLine())
@@ -86,13 +74,13 @@ func (p *Printer) printResponseHeaders(res *result.Result) string {
 	return s
 }
 
-func (p *Printer) printResponseBody(res *result.Result) string {
-	if responseJson := res.Json(); responseJson != nil {
-		return fmt.Sprintf("%v\n", p.formatter.Json(responseJson))
+func (p *Printer) printBody(body *result.Body) string {
+	if jsonBody := body.Json(); jsonBody != nil {
+		return fmt.Sprintf("%v\n", p.formatter.Json(jsonBody))
 	}
 
-	if responseText := res.Text(); responseText != "" {
-		return fmt.Sprintf("%v\n", responseText)
+	if textBody := body.Text(); textBody != "" {
+		return fmt.Sprintf("%v\n", textBody)
 	}
 
 	return ""

@@ -8,14 +8,28 @@ import (
 
 type Result struct {
 	Response     *http.Response
-	ResponseBody []byte
-	RequestBody  []byte
+	ResponseBody Body
+	RequestBody  Body
 	Metadata     Metadata
 }
 
 type Metadata struct {
 	ElapsedTime time.Duration
 }
+
+type StatusLine struct {
+	Protocol string
+	Status   string
+	Time     time.Duration
+}
+
+type RequestLine struct {
+	Protocol string
+	Url      string
+	Method   string
+}
+
+type Body []byte
 
 func (r Result) StatusLine() *StatusLine {
 	return &StatusLine{
@@ -33,47 +47,19 @@ func (r Result) RequestLine() *RequestLine {
 	}
 }
 
-func (r Result) RequestJson() map[string]interface{} {
-	body := r.RequestBody
+func (b Body) Json() map[string]any {
+	if len(b) == 0 {
+		return nil
+	}
 
-	var data map[string]interface{}
-	if err := json.Unmarshal(body, &data); err != nil {
+	var data map[string]any
+	if err := json.Unmarshal(b, &data); err != nil {
 		return nil
 	}
 
 	return data
 }
 
-func (r Result) RequestText() string {
-	body := r.RequestBody
-	return string(body)
-}
-
-func (r Result) Json() map[string]interface{} {
-	if len(r.ResponseBody) == 0 {
-		return nil
-	}
-
-	var data map[string]interface{}
-	if err := json.Unmarshal(r.ResponseBody, &data); err != nil {
-		return nil
-	}
-
-	return data
-}
-
-func (r Result) Text() string {
-	return string(r.ResponseBody)
-}
-
-type StatusLine struct {
-	Protocol string
-	Status   string
-	Time     time.Duration
-}
-
-type RequestLine struct {
-	Protocol string
-	Url      string
-	Method   string
+func (b Body) Text() string {
+	return string(b)
 }
