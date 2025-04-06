@@ -1,7 +1,5 @@
 package printer
 
-import "fmt"
-
 type Color = string
 
 const (
@@ -15,29 +13,29 @@ const (
 )
 
 func Colorize(s string, c Color) string {
-	return fmt.Sprintf("%v%s%v", c, s, ColorReset)
+	return c + s + ColorReset
 }
 
 func Red(s string) string {
-	return ColorRed + s + ColorReset
+	return Colorize(s, ColorRed)
 }
 
 func Green(s string) string {
-	return ColorGreen + s + ColorReset
+	return Colorize(s, ColorGreen)
 }
 
 func Yellow(s string) string {
-	return ColorYellow + s + ColorReset
+	return Colorize(s, ColorYellow)
 }
 
 func Blue(s string) string {
-	return ColorBlue + s + ColorReset
+	return Colorize(s, ColorBlue)
 }
 
 func Magenta(s string) string {
-	return ColorMagenta + s + ColorReset
+	return Colorize(s, ColorMagenta)
 }
 
 func Cyan(s string) string {
-	return ColorCyan + s + ColorReset
+	return Colorize(s, ColorCyan)
 }
