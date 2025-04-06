@@ -11,6 +11,8 @@ import (
 	"github.com/eynopv/lac/pkg/result"
 )
 
+var IsTerminal = term.IsTerminal
+
 type PrinterConfig struct {
 	PrintResponseBody    bool
 	PrintResponseHeaders bool
@@ -19,25 +21,29 @@ type PrinterConfig struct {
 }
 
 type Printer struct {
-	config    PrinterConfig
-	formatter Formatter
+	config      PrinterConfig
+	destination io.Writer
+	formatter   Formatter
 }
 
-var destination io.Writer = os.Stdout
-var isTerminal = term.IsTerminal(int(os.Stdout.Fd()))
-
 func NewPrinter(config PrinterConfig) Printer {
-	formatter := NewFormatter(isTerminal)
+	var formatter Formatter
+	if IsTerminal(int(os.Stdout.Fd())) {
+		formatter = ColorFormatter{}
+	} else {
+		formatter = PlainFormatter{}
+	}
 
 	return Printer{
-		config:    config,
-		formatter: formatter,
+		config:      config,
+		destination: os.Stdout,
+		formatter:   formatter,
 	}
 }
 
 func (p *Printer) Print(res *result.Result) {
 	if res.Response == nil {
-		fmt.Fprint(destination, "No HTTP response available\n")
+		fmt.Fprint(p.destination, "No HTTP response available\n")
 		return
 	}
 
@@ -59,7 +65,7 @@ func (p *Printer) Print(res *result.Result) {
 		sections = append(sections, p.printBody(&res.ResponseBody))
 	}
 
-	fmt.Fprint(destination, strings.Join(sections, "\n"))
+	fmt.Fprint(p.destination, strings.Join(sections, "\n"))
 }
 
 func (p *Printer) printRequestHeaders(res *result.Result) string {

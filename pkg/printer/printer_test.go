@@ -23,10 +23,10 @@ func TestNewPrinter(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			oldIsTerminal := isTerminal
-			defer func() { isTerminal = oldIsTerminal }()
+			originalIsTerminal := IsTerminal
+			defer func() { IsTerminal = originalIsTerminal }()
 
-			isTerminal = tt.isTerminal
+			IsTerminal = func(fd int) bool { return tt.isTerminal }
 
 			p := NewPrinter(PrinterConfig{})
 
@@ -48,14 +48,6 @@ func TestNewPrinter(t *testing.T) {
 
 func TestPrinter_Print(t *testing.T) {
 	var buf bytes.Buffer
-
-	oldDestination := destination
-	destination = &buf
-	oldIsTerminal := isTerminal
-	isTerminal = false
-
-	defer func() { destination = oldDestination }()
-	defer func() { isTerminal = oldIsTerminal }()
 
 	res := result.Result{
 		Response: &http.Response{
@@ -108,15 +100,20 @@ func TestPrinter_Print(t *testing.T) {
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
 			buf.Reset()
 
-			p := NewPrinter(tc.config)
+			p := Printer{
+				config:      tt.config,
+				destination: &buf,
+				formatter:   PlainFormatter{},
+			}
+
 			p.Print(&res)
 
 			out := buf.String()
-			for _, expect := range tc.expect {
+			for _, expect := range tt.expect {
 				if !strings.Contains(out, expect) {
 					t.Errorf("expected output to contain %q: %v", expect, out)
 				}

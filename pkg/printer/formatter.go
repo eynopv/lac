@@ -18,14 +18,6 @@ type Formatter interface {
 	Json(map[string]any) string
 }
 
-func NewFormatter(isTerminal bool) Formatter {
-	if isTerminal {
-		return ColorFormatter{}
-	}
-
-	return PlainFormatter{}
-}
-
 type ColorFormatter struct{}
 type PlainFormatter struct{}
 
@@ -53,11 +45,11 @@ func (f PlainFormatter) RequestLine(line result.RequestLine) string {
 	return formatRequestLine(line, false)
 }
 
-func (f ColorFormatter) Json(j map[string]interface{}) string {
+func (f ColorFormatter) Json(j map[string]any) string {
 	return formatJson(j)
 }
 
-func (f PlainFormatter) Json(j map[string]interface{}) string {
+func (f PlainFormatter) Json(j map[string]any) string {
 	return formatJson(j)
 }
 
