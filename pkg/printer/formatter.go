@@ -136,7 +136,7 @@ func formatRequestLine(line result.RequestLine, colorized bool) string {
 }
 
 func formatJson(j map[string]any) string {
-	if prettyJson, err := json.MarshalIndent(j, "", " "); err != nil {
+	if prettyJson, err := json.MarshalIndent(j, "", "  "); err != nil {
 		return fmt.Sprintf("unable to parse json: %v\n", err)
 	} else {
 		return string(prettyJson)
