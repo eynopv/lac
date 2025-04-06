@@ -1,11 +1,17 @@
 package printer
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"io"
+	"os"
 	"strings"
+
+	"golang.org/x/term"
+
+	"github.com/eynopv/lac/pkg/result"
 )
+
+var IsTerminal = term.IsTerminal
 
 type PrinterConfig struct {
 	PrintResponseBody    bool
@@ -15,68 +21,67 @@ type PrinterConfig struct {
 }
 
 type Printer struct {
-	config PrinterConfig
+	config      PrinterConfig
+	destination io.Writer
+	formatter   Formatter
 }
 
 func NewPrinter(config PrinterConfig) Printer {
+	formatter := Formatter{
+		colored: IsTerminal(int(os.Stdout.Fd())),
+	}
+
 	return Printer{
-		config: config,
+		config:      config,
+		destination: os.Stdout,
+		formatter:   formatter,
 	}
 }
 
-func PrintHeaders(headers http.Header) {
-	fmt.Print(StringifyHeaders(headers))
-	fmt.Print("\n")
-}
-
-func StringifyHeaders(headers http.Header) string {
-	var s []string
-	for key, value := range headers {
-		s = append(s, fmt.Sprintf("%s: %s", Cyan(key), strings.Join(value, ", ")))
-	}
-
-	return strings.Join(s, "\n")
-}
-
-func PrintPrettyJson(v any) {
-	prettyJson, err := ToPrettyJsonString(v)
-	if err != nil {
-		fmt.Printf("Failed to parse %v to json: %v\n", v, err)
+func (p *Printer) Print(res *result.Result) {
+	if res.Response == nil {
+		fmt.Fprint(p.destination, "No HTTP response available\n")
 		return
 	}
 
-	fmt.Println(prettyJson)
-}
+	sections := []string{}
 
-func ToPrettyJsonString(v any) (string, error) {
-	prettyJson, err := json.MarshalIndent(v, "", " ")
-	if err != nil {
-		return "", err
+	if p.config.PrintRequestHeaders {
+		sections = append(sections, p.printRequestHeaders(res))
 	}
 
-	return string(prettyJson), nil
+	if p.config.PrintRequestBody {
+		sections = append(sections, p.printBody(&res.RequestBody))
+	}
+
+	if p.config.PrintResponseHeaders {
+		sections = append(sections, p.printResponseHeaders(res))
+	}
+
+	if p.config.PrintResponseBody {
+		sections = append(sections, p.printBody(&res.ResponseBody))
+	}
+
+	fmt.Fprint(p.destination, strings.Join(sections, "\n"))
 }
 
-func Red(s string) string {
-	return ColorRed + s + ColorReset
+func (p *Printer) printRequestHeaders(res *result.Result) string {
+	req := *res.Response.Request
+	return p.formatter.RequestLine(*res.RequestLine()) + p.formatter.Headers(req.Header)
 }
 
-func Green(s string) string {
-	return ColorGreen + s + ColorReset
+func (p *Printer) printResponseHeaders(res *result.Result) string {
+	return p.formatter.StatusLine(*res.StatusLine()) + p.formatter.Headers(res.Response.Header)
 }
 
-func Yellow(s string) string {
-	return ColorYellow + s + ColorReset
-}
+func (p *Printer) printBody(body *result.Body) string {
+	if jsonBody := body.Json(); jsonBody != nil {
+		return fmt.Sprintf("%v\n", p.formatter.Json(jsonBody))
+	}
 
-func Blue(s string) string {
-	return ColorBlue + s + ColorReset
-}
+	if textBody := body.Text(); textBody != "" {
+		return fmt.Sprintf("%v\n", textBody)
+	}
 
-func Magenta(s string) string {
-	return ColorMagenta + s + ColorReset
-}
-
-func Cyan(s string) string {
-	return ColorCyan + s + ColorReset
+	return ""
 }

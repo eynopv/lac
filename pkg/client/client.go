@@ -57,21 +57,14 @@ func (c *Client) Do(r *request.Request, auth authentication.Auth) (*result.Resul
 		return nil, err
 	}
 
-	result, err := result.NewResult(
-		elapsedTime,
-		res.Request.URL.String(),
-		res.Status,
-		res.StatusCode,
-		res.Header,
-		res.Proto,
-		body,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return &result.Result{
+		Response:     res,
+		ResponseBody: body,
+		RequestBody:  r.Body,
+		Metadata: result.Metadata{
+			ElapsedTime: elapsedTime,
+		},
+	}, nil
 }
 
 func (c *Client) ToHttpClient() *http.Client {
