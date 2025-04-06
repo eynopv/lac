@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -32,10 +31,6 @@ var (
 				return err
 			}
 
-			if err := prepareHeaders(); err != nil {
-				return err
-			}
-
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
@@ -44,7 +39,6 @@ var (
 	}
 
 	VariablesInput           []string
-	HeadersInput             []string
 	EnvironmentFilePathInput string
 	PrintParameters          string
 
@@ -57,7 +51,6 @@ var (
 
 func init() {
 	rootCmd.PersistentFlags().StringSliceVar(&VariablesInput, "vars", []string{}, "variables")
-	rootCmd.PersistentFlags().StringSliceVar(&HeadersInput, "headers", []string{}, "headers")
 	rootCmd.PersistentFlags().StringVar(&EnvironmentFilePathInput, "env", ".env", "environment file")
 	rootCmd.PersistentFlags().IntVarP(&ClientConfig.Timeout, "timeout", "t", 15, "request timeout")
 	rootCmd.PersistentFlags().BoolVar(&ClientConfig.NoRedirects, "no-redirects", false, "do not follow redirects")
@@ -95,22 +88,6 @@ func prepareVariables() error {
 			} else {
 				Variables[keyValue[0]] = value
 			}
-		}
-	}
-
-	return nil
-}
-
-func prepareHeaders() error {
-	for _, headersInput := range HeadersInput {
-		err := utils.LoadItem(headersInput, &Headers)
-		if err != nil {
-			keyValue := strings.Split(headersInput, "=")
-			if len(keyValue) != 2 {
-				return fmt.Errorf("Invalid headers input: %v", headersInput)
-			}
-
-			Headers[http.CanonicalHeaderKey(keyValue[0])] = keyValue[1]
 		}
 	}
 
