@@ -15,7 +15,7 @@ type Formatter interface {
 	StatusLine(statusLine result.StatusLine) string
 	RequestLine(requestLine result.RequestLine) string
 	Headers(headers http.Header) string
-	Json(map[string]interface{}) string
+	Json(map[string]any) string
 }
 
 func NewFormatter(isTerminal bool) Formatter {
@@ -130,11 +130,11 @@ func formatRequestLine(line result.RequestLine, colorized bool) string {
 	var methodColor Color
 
 	switch line.Method {
-	case "GET", "HEAD":
+	case http.MethodGet, http.MethodHead:
 		methodColor = ColorGreen
-	case "POST", "PUT", "PATCH":
+	case http.MethodPost, http.MethodPut, http.MethodPatch:
 		methodColor = ColorYellow
-	case "DELETE":
+	case http.MethodDelete:
 		methodColor = ColorRed
 	default:
 		methodColor = ColorMagenta
@@ -143,7 +143,7 @@ func formatRequestLine(line result.RequestLine, colorized bool) string {
 	return fmt.Sprintf(fstring, Colorize(line.Method, methodColor), line.Url, line.Protocol)
 }
 
-func formatJson(j map[string]interface{}) string {
+func formatJson(j map[string]any) string {
 	if prettyJson, err := json.MarshalIndent(j, "", " "); err != nil {
 		return "unable to parse json"
 	} else {
