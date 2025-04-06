@@ -79,11 +79,13 @@ func Test_formatStatusLine(t *testing.T) {
 			var formatter interface {
 				StatusLine(result.StatusLine) string
 			}
+
 			if tt.useColor {
 				formatter = ColorFormatter{}
 			} else {
 				formatter = PlainFormatter{}
 			}
+
 			got := formatter.StatusLine(tt.line)
 			assert.Equal(t, tt.want, got)
 		})
@@ -175,11 +177,13 @@ func Test_formatRequestLine(t *testing.T) {
 			var formatter interface {
 				RequestLine(result.RequestLine) string
 			}
+
 			if tt.useColor {
 				formatter = ColorFormatter{}
 			} else {
 				formatter = PlainFormatter{}
 			}
+
 			got := formatter.RequestLine(tt.line)
 			assert.Equal(t, tt.want, got)
 		})
@@ -278,11 +282,13 @@ func Test_formatHeaders(t *testing.T) {
 			var formatter interface {
 				Headers(http.Header) string
 			}
+
 			if tt.useColor {
 				formatter = ColorFormatter{}
 			} else {
 				formatter = PlainFormatter{}
 			}
+
 			got := formatter.Headers(tt.headers)
 			assert.Equal(t, tt.want, got)
 		})
