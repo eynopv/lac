@@ -1,4 +1,4 @@
-build:
+build: clean
 	go build -o lac
 
 test:
