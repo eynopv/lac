@@ -70,19 +70,11 @@ func (p *Printer) Print(res *result.Result) {
 
 func (p *Printer) printRequestHeaders(res *result.Result) string {
 	req := *res.Response.Request
-	s := ""
-	s += p.formatter.RequestLine(*res.RequestLine())
-	s += p.formatter.Headers(req.Header)
-
-	return s
+	return p.formatter.RequestLine(*res.RequestLine()) + p.formatter.Headers(req.Header)
 }
 
 func (p *Printer) printResponseHeaders(res *result.Result) string {
-	s := ""
-	s += p.formatter.StatusLine(*res.StatusLine())
-	s += p.formatter.Headers(res.Response.Header)
-
-	return s
+	return p.formatter.StatusLine(*res.StatusLine()) + p.formatter.Headers(res.Response.Header)
 }
 
 func (p *Printer) printBody(body *result.Body) string {

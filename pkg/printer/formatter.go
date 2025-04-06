@@ -54,8 +54,6 @@ func (f PlainFormatter) Json(j map[string]any) string {
 }
 
 func formatHeaders(headers http.Header, colorized bool) string {
-	s := ""
-
 	fstring := "%s: %s\n"
 
 	keys := make([]string, 0, len(headers))
@@ -65,16 +63,18 @@ func formatHeaders(headers http.Header, colorized bool) string {
 
 	sort.Strings(keys)
 
+	var sb strings.Builder
+
 	for _, key := range keys {
 		value := strings.Join(headers[key], ", ")
 		if colorized {
-			s += fmt.Sprintf(fstring, Cyan(key), value)
+			sb.WriteString(fmt.Sprintf(fstring, Cyan(key), value))
 		} else {
-			s += fmt.Sprintf(fstring, key, value)
+			sb.WriteString(fmt.Sprintf(fstring, key, value))
 		}
 	}
 
-	return s
+	return sb.String()
 }
 
 func formatStatusLine(line result.StatusLine, colorized bool) string {
