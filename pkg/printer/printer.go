@@ -36,6 +36,11 @@ func NewPrinter(config PrinterConfig) Printer {
 }
 
 func (p *Printer) Print(res *result.Result) {
+	if res.Response == nil {
+		fmt.Fprint(destination, "No HTTP response available\n")
+		return
+	}
+
 	sections := []string{}
 
 	if p.config.PrintRequestHeaders {
