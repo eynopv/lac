@@ -76,16 +76,7 @@ func Test_formatStatusLine(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var formatter interface {
-				StatusLine(result.StatusLine) string
-			}
-
-			if tt.useColor {
-				formatter = ColorFormatter{}
-			} else {
-				formatter = PlainFormatter{}
-			}
-
+			formatter := Formatter{colored: tt.useColor}
 			got := formatter.StatusLine(tt.line)
 			assert.Equal(t, tt.want, got)
 		})
@@ -174,16 +165,7 @@ func Test_formatRequestLine(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var formatter interface {
-				RequestLine(result.RequestLine) string
-			}
-
-			if tt.useColor {
-				formatter = ColorFormatter{}
-			} else {
-				formatter = PlainFormatter{}
-			}
-
+			formatter := Formatter{colored: tt.useColor}
 			got := formatter.RequestLine(tt.line)
 			assert.Equal(t, tt.want, got)
 		})
@@ -230,7 +212,7 @@ func Test_formatJson(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			formatter := PlainFormatter{}
+			formatter := Formatter{}
 			got := formatter.Json(tt.json)
 			assert.Equal(t, tt.want, got)
 		})
@@ -279,16 +261,7 @@ func Test_formatHeaders(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var formatter interface {
-				Headers(http.Header) string
-			}
-
-			if tt.useColor {
-				formatter = ColorFormatter{}
-			} else {
-				formatter = PlainFormatter{}
-			}
-
+			formatter := Formatter{colored: tt.useColor}
 			got := formatter.Headers(tt.headers)
 			assert.Equal(t, tt.want, got)
 		})

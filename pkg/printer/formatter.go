@@ -11,45 +11,23 @@ import (
 	"github.com/eynopv/lac/pkg/result"
 )
 
-type Formatter interface {
-	StatusLine(statusLine result.StatusLine) string
-	RequestLine(requestLine result.RequestLine) string
-	Headers(headers http.Header) string
-	Json(map[string]any) string
+type Formatter struct {
+	colored bool
 }
 
-type ColorFormatter struct{}
-type PlainFormatter struct{}
-
-func (f ColorFormatter) Headers(headers http.Header) string {
-	return formatHeaders(headers, true)
+func (f Formatter) Headers(headers http.Header) string {
+	return formatHeaders(headers, f.colored)
 }
 
-func (f PlainFormatter) Headers(headers http.Header) string {
-	return formatHeaders(headers, false)
+func (f Formatter) StatusLine(line result.StatusLine) string {
+	return formatStatusLine(line, f.colored)
 }
 
-func (f ColorFormatter) StatusLine(line result.StatusLine) string {
-	return formatStatusLine(line, true)
+func (f Formatter) RequestLine(line result.RequestLine) string {
+	return formatRequestLine(line, f.colored)
 }
 
-func (f PlainFormatter) StatusLine(line result.StatusLine) string {
-	return formatStatusLine(line, false)
-}
-
-func (f ColorFormatter) RequestLine(line result.RequestLine) string {
-	return formatRequestLine(line, true)
-}
-
-func (f PlainFormatter) RequestLine(line result.RequestLine) string {
-	return formatRequestLine(line, false)
-}
-
-func (f ColorFormatter) Json(j map[string]any) string {
-	return formatJson(j)
-}
-
-func (f PlainFormatter) Json(j map[string]any) string {
+func (f Formatter) Json(j map[string]any) string {
 	return formatJson(j)
 }
 

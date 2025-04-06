@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/eynopv/lac/internal/assert"
 	"github.com/eynopv/lac/pkg/result"
 )
 
@@ -30,18 +31,7 @@ func TestNewPrinter(t *testing.T) {
 
 			p := NewPrinter(PrinterConfig{})
 
-			switch f := p.formatter.(type) {
-			case ColorFormatter:
-				if !tt.expectColor {
-					t.Errorf("expected PlainFormatter, got ColorFormatter")
-				}
-			case PlainFormatter:
-				if tt.expectColor {
-					t.Errorf("expected ColorFormatter, got PlainFormatter")
-				}
-			default:
-				t.Errorf("unexpected formatter type: %T", f)
-			}
+			assert.Equal(t, p.formatter.colored, tt.isTerminal)
 		})
 	}
 }
@@ -107,7 +97,7 @@ func TestPrinter_Print(t *testing.T) {
 			p := Printer{
 				config:      tt.config,
 				destination: &buf,
-				formatter:   PlainFormatter{},
+				formatter:   Formatter{},
 			}
 
 			p.Print(&res)

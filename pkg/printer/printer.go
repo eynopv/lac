@@ -27,11 +27,8 @@ type Printer struct {
 }
 
 func NewPrinter(config PrinterConfig) Printer {
-	var formatter Formatter
-	if IsTerminal(int(os.Stdout.Fd())) {
-		formatter = ColorFormatter{}
-	} else {
-		formatter = PlainFormatter{}
+	formatter := Formatter{
+		colored: IsTerminal(int(os.Stdout.Fd())),
 	}
 
 	return Printer{
