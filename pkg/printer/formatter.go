@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
@@ -65,12 +66,19 @@ func formatHeaders(headers http.Header, colorized bool) string {
 
 	fstring := "%s: %s\n"
 
-	for key, value := range headers {
-		vs := strings.Join(value, ", ")
+	keys := make([]string, 0, len(headers))
+	for k := range headers {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		value := strings.Join(headers[key], ", ")
 		if colorized {
-			s += fmt.Sprintf(fstring, Cyan(key), vs)
+			s += fmt.Sprintf(fstring, Cyan(key), value)
 		} else {
-			s += fmt.Sprintf(fstring, key, vs)
+			s += fmt.Sprintf(fstring, key, value)
 		}
 	}
 
