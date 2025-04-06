@@ -193,38 +193,38 @@ func Test_formatRequestLine(t *testing.T) {
 func Test_formatJson(t *testing.T) {
 	tests := []struct {
 		name string
-		json map[string]interface{}
+		json map[string]any
 		want string
 	}{
 		{
 			name: "simple",
-			json: map[string]interface{}{
+			json: map[string]any{
 				"name": "Alice",
 				"age":  30,
 			},
-			want: "{\n \"age\": 30,\n \"name\": \"Alice\"\n}",
+			want: "{\n  \"age\": 30,\n  \"name\": \"Alice\"\n}",
 		},
 		{
 			name: "nested",
-			json: map[string]interface{}{
-				"user": map[string]interface{}{
+			json: map[string]any{
+				"user": map[string]any{
 					"id":   1,
 					"name": "Bob",
 				},
 			},
-			want: "{\n \"user\": {\n  \"id\": 1,\n  \"name\": \"Bob\"\n }\n}",
+			want: "{\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"Bob\"\n  }\n}",
 		},
 		{
 			name: "empty",
-			json: map[string]interface{}{},
+			json: map[string]any{},
 			want: "{}",
 		},
 		{
 			name: "unmarshalable value (channel)",
-			json: map[string]interface{}{
+			json: map[string]any{
 				"invalid": make(chan int),
 			},
-			want: "unable to parse json",
+			want: "unable to parse json: json: unsupported type: chan int\n",
 		},
 	}
 
