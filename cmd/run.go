@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/eynopv/lac/pkg/authentication"
 	"github.com/eynopv/lac/pkg/client"
 	"github.com/eynopv/lac/pkg/param"
 	"github.com/eynopv/lac/pkg/printer"
 	"github.com/eynopv/lac/pkg/request"
-	"github.com/eynopv/lac/pkg/request/authentication"
+	"github.com/eynopv/lac/pkg/template"
 	"github.com/eynopv/lac/pkg/utils"
 	"github.com/eynopv/lac/pkg/variables"
 )
@@ -19,7 +20,7 @@ func runCommandFunction(
 	headers map[string]string,
 	clientConfig *client.ClientConfig,
 ) {
-	requestTemplate, err := request.NewTemplate(args[0])
+	requestTemplate, err := template.NewTemplate(args[0])
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 
 	"github.com/eynopv/lac/internal/errorsx"
-	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/template"
 )
 
 type BasicAuth struct {
@@ -16,7 +16,7 @@ type BasicAuth struct {
 	Password string `json:"password" yaml:"password"`
 }
 
-func NewBasicAuth(t *request.Template) (*BasicAuth, error) {
+func NewBasicAuth(t *template.Template) (*BasicAuth, error) {
 	var wrapper struct {
 		Auth *BasicAuth `json:"auth" yaml:"auth"`
 	}

@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"net/http"
 
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 
 	"github.com/eynopv/lac/internal/errorsx"
-	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/template"
 )
 
 type BearerAuth struct {
 	Token string `json:"token" yaml:"token"`
 }
 
-func NewBearerAuth(t *request.Template) (*BearerAuth, error) {
+func NewBearerAuth(t *template.Template) (*BearerAuth, error) {
 	var wrapper struct {
 		Auth *BearerAuth `json:"auth" yaml:"auth"`
 	}

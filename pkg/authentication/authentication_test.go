@@ -5,12 +5,12 @@ import (
 
 	"github.com/eynopv/lac/internal/assert"
 	"github.com/eynopv/lac/internal/errorsx"
-	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/template"
 )
 
 func TestNewAuth(t *testing.T) {
 	t.Run("yaml", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     auth:
       type: unknown
     `)
@@ -23,7 +23,7 @@ func TestNewAuth(t *testing.T) {
 	})
 
 	t.Run("json", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     {
       "auth": {
         "type": "unknown"
@@ -39,7 +39,7 @@ func TestNewAuth(t *testing.T) {
 	})
 
 	t.Run("no auth", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     {
       "hello": "world"
     }
@@ -52,7 +52,7 @@ func TestNewAuth(t *testing.T) {
 	})
 
 	t.Run("basic", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     auth:
       type: basic
       username: hello
@@ -67,7 +67,7 @@ func TestNewAuth(t *testing.T) {
 	})
 
 	t.Run("bearer", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     auth:
       type: bearer
       token: helloworld
@@ -81,7 +81,7 @@ func TestNewAuth(t *testing.T) {
 	})
 
 	t.Run("api", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     auth:
       type: api
       header: x-api-key

@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	yaml "gopkg.in/yaml.v3"
+
 	"github.com/eynopv/lac/internal/errorsx"
-	"github.com/eynopv/lac/pkg/request"
-	"gopkg.in/yaml.v3"
+	"github.com/eynopv/lac/pkg/template"
 )
 
 type ApiAuth struct {
@@ -15,7 +16,7 @@ type ApiAuth struct {
 	Key    string `json:"key" yaml:"key"`
 }
 
-func NewApiAuth(t *request.Template) (*ApiAuth, error) {
+func NewApiAuth(t *template.Template) (*ApiAuth, error) {
 	var wrapper struct {
 		Auth *ApiAuth `json:"auth" yaml:"auth"`
 	}

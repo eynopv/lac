@@ -1,4 +1,4 @@
-package request
+package template
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 
 	"github.com/eynopv/lac/pkg/param"
+	"github.com/eynopv/lac/pkg/request"
 	"github.com/eynopv/lac/pkg/utils"
 	"github.com/eynopv/lac/pkg/variables"
 )
@@ -34,8 +35,8 @@ func (t *Template) Interpolate(vars variables.Variables, useEnv bool) *Template 
 	return &result
 }
 
-func (t *Template) Parse() (*Request, error) {
-	var requestData RequestData
+func (t *Template) Parse() (*request.Request, error) {
+	var requestData request.RequestData
 
 	err := json.Unmarshal([]byte(*t), &requestData)
 	if err != nil {
@@ -46,7 +47,7 @@ func (t *Template) Parse() (*Request, error) {
 		return nil, fmt.Errorf("%w: %v", ErrTemplateParse, err)
 	}
 
-	nr := NewRequest(requestData)
+	nr := request.NewRequest(requestData)
 
 	return &nr, nil
 }

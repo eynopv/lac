@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/eynopv/lac/internal/assert"
-	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/template"
 )
 
 func TestNewBearerAuth(t *testing.T) {
 	t.Run("yaml", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     auth:
       token: helloworld
     `)
@@ -23,7 +23,7 @@ func TestNewBearerAuth(t *testing.T) {
 	})
 
 	t.Run("json", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     {
       "auth": {
         "token": "helloworld"
@@ -39,7 +39,7 @@ func TestNewBearerAuth(t *testing.T) {
 	})
 
 	t.Run("invalid", func(t *testing.T) {
-		template := request.Template("this is invalid template")
+		template := template.Template("this is invalid template")
 
 		auth, err := NewBearerAuth(&template)
 
@@ -48,7 +48,7 @@ func TestNewBearerAuth(t *testing.T) {
 	})
 
 	t.Run("template without auth", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     {
       "hello": "world"
     }
@@ -66,12 +66,12 @@ func TestBearerAuthApply(t *testing.T) {
 		Token: "helloworld",
 	}
 
-	request, err := http.NewRequest(http.MethodGet, "", nil)
+	template, err := http.NewRequest(http.MethodGet, "", nil)
 
-	assert.NotNil(t, request)
+	assert.NotNil(t, template)
 	assert.NoError(t, err)
 
-	bearer.Apply(request)
+	bearer.Apply(template)
 
-	assert.Equal(t, request.Header.Get("Authorization"), "Bearer helloworld")
+	assert.Equal(t, template.Header.Get("Authorization"), "Bearer helloworld")
 }

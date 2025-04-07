@@ -6,7 +6,7 @@ import (
 
 	"github.com/eynopv/lac/internal/assert"
 	"github.com/eynopv/lac/internal/errorsx"
-	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/template"
 )
 
 func TestNewBasicAuth(t *testing.T) {
@@ -17,7 +17,7 @@ auth:
   password: world
   `
 
-		template := request.Template(data)
+		template := template.Template(data)
 		auth, err := NewBasicAuth(&template)
 
 		assert.NoError(t, err)
@@ -35,7 +35,7 @@ auth:
   }
 }
 `
-		template := request.Template(data)
+		template := template.Template(data)
 		auth, err := NewBasicAuth(&template)
 
 		assert.NoError(t, err)
@@ -47,7 +47,7 @@ auth:
 	t.Run("invalid", func(t *testing.T) {
 		data := "this is invalid template"
 
-		template := request.Template(data)
+		template := template.Template(data)
 		auth, err := NewBasicAuth(&template)
 
 		assert.Error(t, err)
@@ -61,7 +61,7 @@ auth:
 }
 `
 
-		template := request.Template(data)
+		template := template.Template(data)
 		auth, err := NewBasicAuth(&template)
 
 		assert.NoError(t, err)
@@ -76,7 +76,7 @@ auth:
   }
 }
 `
-		template := request.Template(data)
+		template := template.Template(data)
 		auth, err := NewBasicAuth(&template)
 
 		assert.Error(t, err)
@@ -92,7 +92,7 @@ auth:
   }
 }
 `
-		template := request.Template(data)
+		template := template.Template(data)
 		auth, err := NewBasicAuth(&template)
 
 		assert.Error(t, err)
@@ -109,7 +109,7 @@ auth:
   }
 }
 `
-		template := request.Template(data)
+		template := template.Template(data)
 		auth, err := NewBasicAuth(&template)
 
 		assert.Error(t, err)
@@ -124,14 +124,14 @@ func TestBasicAuthApply(t *testing.T) {
 		Password: "world",
 	}
 
-	request, err := http.NewRequest(http.MethodGet, "", nil)
+	template, err := http.NewRequest(http.MethodGet, "", nil)
 
-	assert.NotNil(t, request)
+	assert.NotNil(t, template)
 	assert.NoError(t, err)
 
-	basic.Apply(request)
+	basic.Apply(template)
 
-	username, password, ok := request.BasicAuth()
+	username, password, ok := template.BasicAuth()
 	assert.True(t, ok)
 	assert.Equal(t, basic.Username, username)
 	assert.Equal(t, basic.Password, password)
