@@ -124,7 +124,7 @@ func TestVariables_UnmarshalYAML(t *testing.T) {
 func yamlNode(s string) *yaml.Node {
 	var node yaml.Node
 	if err := yaml.Unmarshal([]byte(s), &node); err != nil {
-		panic(err)
+		return nil
 	}
 
 	return node.Content[0]
