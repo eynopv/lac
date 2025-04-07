@@ -9,6 +9,7 @@ import (
 
 	"github.com/eynopv/lac/pkg/param"
 	"github.com/eynopv/lac/pkg/utils"
+	"github.com/eynopv/lac/pkg/variables"
 )
 
 var ErrTemplateParse = errors.New("failed to parse template")
@@ -28,7 +29,7 @@ func NewTemplate(templatePath string) (*Template, error) {
 	return &result, nil
 }
 
-func (t *Template) Interpolate(vars map[string]any, useEnv bool) *Template {
+func (t *Template) Interpolate(vars variables.Variables, useEnv bool) *Template {
 	result := Template(param.Param(*t).Resolve(vars, true))
 	return &result
 }

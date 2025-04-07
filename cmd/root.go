@@ -12,6 +12,7 @@ import (
 
 	"github.com/eynopv/lac/pkg/client"
 	"github.com/eynopv/lac/pkg/utils"
+	"github.com/eynopv/lac/pkg/variables"
 )
 
 var (
@@ -43,7 +44,7 @@ var (
 	PrintParameters          string
 
 	ClientConfig client.ClientConfig
-	Variables    = map[string]any{}
+	Variables    variables.Variables
 	Headers      = map[string]string{
 		"User-Agent": fmt.Sprintf("lac/%s", version),
 	}

@@ -10,11 +10,12 @@ import (
 	"github.com/eynopv/lac/pkg/request"
 	"github.com/eynopv/lac/pkg/request/authentication"
 	"github.com/eynopv/lac/pkg/utils"
+	"github.com/eynopv/lac/pkg/variables"
 )
 
 func runCommandFunction(
 	args []string,
-	variables map[string]any,
+	variables variables.Variables,
 	headers map[string]string,
 	clientConfig *client.ClientConfig,
 ) {
@@ -43,7 +44,7 @@ func runCommandFunction(
 
 func runRequest(
 	req *request.Request,
-	variables map[string]any,
+	variables variables.Variables,
 	headers map[string]string,
 	client *client.Client,
 	auth authentication.Auth,

@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+
+	"github.com/eynopv/lac/pkg/variables"
 )
 
 type Param string
 
-func (p Param) Resolve(replacements map[string]any, useEnv bool) string {
+func (p Param) Resolve(replacements variables.Variables, useEnv bool) string {
 	resolve := func(placeholder string, quoted bool) string {
 		if replacements != nil {
 			if value, ok := replacements[placeholder]; ok {
