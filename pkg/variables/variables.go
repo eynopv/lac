@@ -22,7 +22,7 @@ func (v *Variables) UnmarshalJSON(data []byte) error {
 		case string, float64, bool, nil:
 			// allowed
 		default:
-			return fmt.Errorf("%w: key %s", errorsx.ErrUnsupportedVariablesValue, key)
+			return fmt.Errorf("%w: key %s has type %T", errorsx.ErrUnsupportedVariablesValue, key, value)
 		}
 	}
 
