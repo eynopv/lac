@@ -26,14 +26,14 @@ func (b *Builder) BuildTemplate() (*template.Template, error) {
 }
 
 func (b *Builder) BuildRequest() (*request.Request, error) {
-	tmpl, err := b.BuildTemplate()
+	t, err := b.BuildTemplate()
 	if err != nil {
 		return nil, err
 	}
 
-	tmpl = tmpl.Interpolate(b.Variables, true)
+	t = t.Interpolate(b.Variables, true)
 
-	r, err := tmpl.Parse()
+	r, err := t.Parse()
 	if err != nil {
 		return nil, err
 	}
@@ -44,17 +44,17 @@ func (b *Builder) BuildRequest() (*request.Request, error) {
 }
 
 func (b *Builder) BuildAuth() (authentication.Auth, error) {
-	tmpl, err := b.BuildTemplate()
+	t, err := b.BuildTemplate()
 	if err != nil {
 		return nil, err
 	}
 
-	tmpl = tmpl.Interpolate(b.Variables, true)
+	t = t.Interpolate(b.Variables, true)
 
-	return authentication.NewAuth(tmpl)
+	return authentication.NewAuth(t)
 }
 
 func (b *Builder) BuildPrinter() *printer.Printer {
-	prntr := printer.NewPrinter(b.ClientConfig.PrinterConfig)
-	return &prntr
+	p := printer.NewPrinter(b.ClientConfig.PrinterConfig)
+	return &p
 }
