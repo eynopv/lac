@@ -124,14 +124,14 @@ func TestBasicAuthApply(t *testing.T) {
 		Password: "world",
 	}
 
-	template, err := http.NewRequest(http.MethodGet, "", nil)
+	req, err := http.NewRequest(http.MethodGet, "", nil)
 
-	assert.NotNil(t, template)
+	assert.NotNil(t, req)
 	assert.NoError(t, err)
 
-	basic.Apply(template)
+	basic.Apply(req)
 
-	username, password, ok := template.BasicAuth()
+	username, password, ok := req.BasicAuth()
 	assert.True(t, ok)
 	assert.Equal(t, basic.Username, username)
 	assert.Equal(t, basic.Password, password)
