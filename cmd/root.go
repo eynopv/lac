@@ -10,7 +10,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 
+	"github.com/eynopv/lac/pkg/builder"
 	"github.com/eynopv/lac/pkg/client"
+	"github.com/eynopv/lac/pkg/request"
 	"github.com/eynopv/lac/pkg/utils"
 	"github.com/eynopv/lac/pkg/variables"
 )
@@ -35,18 +37,24 @@ var (
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			runCommandFunction(args, Variables, Headers, &ClientConfig)
+			b := builder.Builder{
+				ClientConfig: ClientConfig,
+				TemplatePath: args[0],
+				Variables:    Variables,
+				Headers:      defaultHeaders,
+			}
+			runCommandFunction(&b)
 		},
 	}
 
 	VariablesInput           []string
 	EnvironmentFilePathInput string
 	PrintParameters          string
+	ClientConfig             client.ClientConfig
+	Variables                variables.Variables
 
-	ClientConfig client.ClientConfig
-	Variables    variables.Variables
-	Headers      = map[string]string{
-		"User-Agent": fmt.Sprintf("lac/%s", version),
+	defaultHeaders = map[string]request.StringOrStringList{
+		"User-Agent": []string{fmt.Sprintf("lac/%s", version)},
 	}
 )
 
