@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/eynopv/lac/pkg/authentication"
 	"github.com/eynopv/lac/pkg/printer"
 	"github.com/eynopv/lac/pkg/request"
-	"github.com/eynopv/lac/pkg/request/authentication"
 	"github.com/eynopv/lac/pkg/result"
 )
 

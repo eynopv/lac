@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/eynopv/lac/internal/assert"
-	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/template"
 )
 
 func TestNewApiAuth(t *testing.T) {
 	t.Run("yaml", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     auth:
       header: x-api-key
       key: helloworld
@@ -25,7 +25,7 @@ func TestNewApiAuth(t *testing.T) {
 	})
 
 	t.Run("json", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     {
       "auth": {
         "header": "x-api-key",
@@ -43,7 +43,7 @@ func TestNewApiAuth(t *testing.T) {
 	})
 
 	t.Run("invalid", func(t *testing.T) {
-		template := request.Template("this is invalid template")
+		template := template.Template("this is invalid template")
 
 		auth, err := NewApiAuth(&template)
 
@@ -52,7 +52,7 @@ func TestNewApiAuth(t *testing.T) {
 	})
 
 	t.Run("template without auth", func(t *testing.T) {
-		template := request.Template(`
+		template := template.Template(`
     {
       "hello": "world"
     }
@@ -71,12 +71,12 @@ func TestApiAuthApply(t *testing.T) {
 		Key:    "helloworld",
 	}
 
-	request, err := http.NewRequest(http.MethodGet, "", nil)
+	template, err := http.NewRequest(http.MethodGet, "", nil)
 
-	assert.NotNil(t, request)
+	assert.NotNil(t, template)
 	assert.NoError(t, err)
 
-	apiAuth.Apply(request)
+	apiAuth.Apply(template)
 
-	assert.Equal(t, request.Header.Get("X-Api-Key"), "helloworld")
+	assert.Equal(t, template.Header.Get("X-Api-Key"), "helloworld")
 }

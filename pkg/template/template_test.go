@@ -1,4 +1,4 @@
-package request
+package template
 
 import (
 	"os"

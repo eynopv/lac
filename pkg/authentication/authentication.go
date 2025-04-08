@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 
 	"github.com/eynopv/lac/internal/errorsx"
-	"github.com/eynopv/lac/pkg/request"
+	"github.com/eynopv/lac/pkg/template"
 )
 
 type AuthType string
@@ -28,7 +28,7 @@ type AuthBase struct {
 	Type AuthType `json:"type" yaml:"type"`
 }
 
-func NewAuth(t *request.Template) (Auth, error) {
+func NewAuth(t *template.Template) (Auth, error) {
 	var wrapper struct {
 		Auth *AuthBase `json:"auth" yaml:"auth"`
 	}

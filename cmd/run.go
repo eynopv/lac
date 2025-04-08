@@ -4,65 +4,30 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/eynopv/lac/pkg/client"
-	"github.com/eynopv/lac/pkg/param"
-	"github.com/eynopv/lac/pkg/printer"
-	"github.com/eynopv/lac/pkg/request"
-	"github.com/eynopv/lac/pkg/request/authentication"
-	"github.com/eynopv/lac/pkg/utils"
-	"github.com/eynopv/lac/pkg/variables"
+	"github.com/eynopv/lac/pkg/builder"
 )
 
-func runCommandFunction(
-	args []string,
-	variables variables.Variables,
-	headers map[string]string,
-	clientConfig *client.ClientConfig,
-) {
-	requestTemplate, err := request.NewTemplate(args[0])
+func runCommandFunction(bldr *builder.Builder) {
+	req, err := bldr.BuildRequest()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	requestTemplate = requestTemplate.Interpolate(variables, true)
-
-	req, err := requestTemplate.Parse()
+	auth, err := bldr.BuildAuth()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	auth, err := authentication.NewAuth(requestTemplate)
+	c := bldr.BuildClient()
+
+	result, err := c.Do(req, auth)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	runRequest(req, variables, headers, client.NewClient(clientConfig), auth)
-}
-
-func runRequest(
-	req *request.Request,
-	variables variables.Variables,
-	headers map[string]string,
-	client *client.Client,
-	auth authentication.Auth,
-) {
-	resolvedHeaders := map[string]request.StringOrStringList{}
-	for key, value := range headers {
-		resolvedHeaders[key] = []string{param.Param(value).Resolve(variables, true)}
-	}
-
-	req.Headers = utils.CombineMaps(resolvedHeaders, req.Headers)
-
-	result, err := client.Do(req, auth)
-
-	if err != nil {
-		fmt.Printf("Error sending request: %v\n", err)
-		os.Exit(1)
-	}
-
-	prntr := printer.NewPrinter(client.PrinterConfig)
+	prntr := bldr.BuildPrinter()
 	prntr.Print(result)
 }
