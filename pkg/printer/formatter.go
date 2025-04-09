@@ -176,7 +176,6 @@ func formatJson(j map[string]any, colorized bool) string {
 			sb.WriteString("[")
 
 			for i, vv := range v {
-				fmt.Printf("%T\n", vv)
 				sb.WriteString(formatValue(vv, level))
 
 				if i != len(v)-1 {
