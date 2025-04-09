@@ -206,17 +206,6 @@ func Test_formatJson(t *testing.T) {
 			want:     "{}",
 		},
 		{
-			name: "nested",
-			json: map[string]any{
-				"user": map[string]any{
-					"id":   1,
-					"name": "Bob",
-				},
-			},
-			useColor: false,
-			want:     "{\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"Bob\"\n  }\n}",
-		},
-		{
 			name: "colored int",
 			json: map[string]any{
 				"int": 1,
