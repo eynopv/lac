@@ -259,15 +259,17 @@ func Test_formatJson(t *testing.T) {
 		{
 			name: "colored list",
 			json: map[string]any{
-				"list": []any{1, "string", false, nil, map[string]any{"one": 1, "two": 2}},
+				"list": []any{1, "string", false, nil, map[string]any{"one": 1}},
 			},
 			useColor: true,
-			want: fmt.Sprintf("{\n  %v: [%v, %v, %v, %v]\n}",
+			want: fmt.Sprintf("{\n  %v: [%v, %v, %v, %v, {\n    %v: %v\n  }]\n}",
 				Yellow(`"list"`),
 				Cyan("1"),
 				Green(`"string"`),
 				Magenta("false"),
 				Red("null"),
+				Yellow(`"one"`),
+				Cyan("1"),
 			),
 		},
 	}
