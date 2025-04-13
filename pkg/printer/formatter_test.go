@@ -174,9 +174,10 @@ func Test_formatRequestLine(t *testing.T) {
 
 func Test_formatJson(t *testing.T) {
 	tests := []struct {
-		name string
-		json map[string]any
-		want string
+		name     string
+		json     map[string]any
+		useColor bool
+		want     string
 	}{
 		{
 			name: "simple",
@@ -184,7 +185,8 @@ func Test_formatJson(t *testing.T) {
 				"name": "Alice",
 				"age":  30,
 			},
-			want: "{\n  \"age\": 30,\n  \"name\": \"Alice\"\n}",
+			useColor: false,
+			want:     "{\n  \"age\": 30,\n  \"name\": \"Alice\"\n}",
 		},
 		{
 			name: "nested",
@@ -194,25 +196,76 @@ func Test_formatJson(t *testing.T) {
 					"name": "Bob",
 				},
 			},
-			want: "{\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"Bob\"\n  }\n}",
+			useColor: false,
+			want:     "{\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"Bob\"\n  }\n}",
 		},
 		{
-			name: "empty",
-			json: map[string]any{},
-			want: "{}",
+			name:     "empty",
+			json:     map[string]any{},
+			useColor: false,
+			want:     "{}",
 		},
 		{
-			name: "unmarshalable value (channel)",
+			name: "colored int",
 			json: map[string]any{
-				"invalid": make(chan int),
+				"int": 1,
 			},
-			want: "unable to parse json: json: unsupported type: chan int\n",
+			useColor: true,
+			want:     fmt.Sprintf("{\n  %v: %v\n}", Yellow(`"int"`), Cyan("1")),
+		},
+		{
+			name: "colored string",
+			json: map[string]any{
+				"string": "Hello, World",
+			},
+			useColor: true,
+			want:     fmt.Sprintf("{\n  %v: %v\n}", Yellow(`"string"`), Green(`"Hello, World"`)),
+		},
+		{
+			name: "colored boolean",
+			json: map[string]any{
+				"boolean": true,
+			},
+			useColor: true,
+			want:     fmt.Sprintf("{\n  %v: %v\n}", Yellow(`"boolean"`), Magenta("true")),
+		},
+		{
+			name: "colored float",
+			json: map[string]any{
+				"float": 1.23,
+			},
+			useColor: true,
+			want:     fmt.Sprintf("{\n  %v: %v\n}", Yellow(`"float"`), Cyan("1.23")),
+		},
+		{
+			name: "colored nil",
+			json: map[string]any{
+				"nil": nil,
+			},
+			useColor: true,
+			want:     fmt.Sprintf("{\n  %v: %v\n}", Yellow(`"nil"`), Red("null")),
+		},
+		{
+			name: "colored list",
+			json: map[string]any{
+				"list": []any{1, "string", false, nil, map[string]any{"one": 1}},
+			},
+			useColor: true,
+			want: fmt.Sprintf("{\n  %v: [%v, %v, %v, %v, {\n    %v: %v\n  }]\n}",
+				Yellow(`"list"`),
+				Cyan("1"),
+				Green(`"string"`),
+				Magenta("false"),
+				Red("null"),
+				Yellow(`"one"`),
+				Cyan("1"),
+			),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			formatter := Formatter{}
+			formatter := Formatter{colored: tt.useColor}
 			got := formatter.Json(tt.json)
 			assert.Equal(t, tt.want, got)
 		})
