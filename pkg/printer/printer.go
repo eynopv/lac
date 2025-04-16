@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -28,7 +29,7 @@ type Printer struct {
 
 func NewPrinter(config PrinterConfig) Printer {
 	formatter := Formatter{
-		colored: IsTerminal(int(os.Stdout.Fd())),
+		colored: true,
 	}
 
 	return Printer{
@@ -39,11 +40,23 @@ func NewPrinter(config PrinterConfig) Printer {
 }
 
 func (p *Printer) Print(res *result.Result) {
+	var output string
+
 	if res.Response == nil {
 		fmt.Fprint(p.destination, "No HTTP response available\n")
 		return
 	}
 
+	if IsTerminal(int(os.Stdout.Fd())) {
+		output = p.makeTerminalOutput(res)
+	} else {
+		output = p.makeNonTerminalOutput(res)
+	}
+
+	fmt.Fprint(p.destination, output)
+}
+
+func (p *Printer) makeTerminalOutput(res *result.Result) string {
 	sections := []string{}
 
 	if p.config.PrintRequestHeaders {
@@ -62,7 +75,55 @@ func (p *Printer) Print(res *result.Result) {
 		sections = append(sections, p.printBody(&res.ResponseBody))
 	}
 
-	fmt.Fprint(p.destination, strings.Join(sections, "\n"))
+	return strings.Join(sections, "\n")
+}
+
+func (p *Printer) makeNonTerminalOutput(res *result.Result) string {
+	m := map[string]any{}
+
+	if p.config.PrintRequestHeaders || p.config.PrintRequestBody {
+		rm := map[string]any{}
+
+		if p.config.PrintRequestHeaders {
+			rm["headers"] = res.Response.Request.Header
+		}
+
+		if p.config.PrintRequestBody {
+			if jsonBody := res.RequestBody.Json(); jsonBody != nil {
+				rm["body"] = jsonBody
+			} else if textBody := res.RequestBody.Text(); textBody != "" {
+				rm["body"] = textBody
+			}
+		}
+
+		m["request"] = rm
+	}
+
+	if p.config.PrintResponseHeaders || p.config.PrintResponseBody {
+		rm := map[string]any{}
+
+		if p.config.PrintResponseHeaders {
+			rm["headers"] = res.Response.Header
+		}
+
+		if p.config.PrintResponseBody {
+			if jsonBody := res.ResponseBody.Json(); jsonBody != nil {
+				rm["body"] = jsonBody
+			} else if textBody := res.ResponseBody.Text(); textBody != "" {
+				rm["body"] = textBody
+			}
+		}
+
+		m["response"] = rm
+	}
+
+	b, err := json.MarshalIndent(m, "", "  ")
+
+	if err != nil {
+		return err.Error()
+	}
+
+	return string(b)
 }
 
 func (p *Printer) printRequestHeaders(res *result.Result) string {
