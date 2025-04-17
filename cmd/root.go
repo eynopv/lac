@@ -27,8 +27,10 @@ var (
 
 			ClientConfig.PrinterConfig.PrintResponseBody = strings.Contains(PrintParameters, "b")
 			ClientConfig.PrinterConfig.PrintResponseHeaders = strings.Contains(PrintParameters, "h")
+			ClientConfig.PrinterConfig.PrintResponseMeta = strings.Contains(PrintParameters, "m")
 			ClientConfig.PrinterConfig.PrintRequestBody = strings.Contains(PrintParameters, "B")
 			ClientConfig.PrinterConfig.PrintRequestHeaders = strings.Contains(PrintParameters, "H")
+			ClientConfig.PrinterConfig.PrintRequestMeta = strings.Contains(PrintParameters, "M")
 
 			if strings.Contains(PrintParameters, "r") {
 				ClientConfig.PrinterConfig.PrintResponseBody = true
