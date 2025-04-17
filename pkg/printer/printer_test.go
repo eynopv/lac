@@ -69,6 +69,11 @@ func TestPrinter_Print(t *testing.T) {
 		{
 			"RequestHeadersAndBody",
 			PrinterConfig{PrintRequestHeaders: true, PrintRequestBody: true},
+			[]string{`request body`, "Req-H"},
+		},
+		{
+			"RequestAllSections",
+			PrinterConfig{PrintRequestHeaders: true, PrintRequestBody: true, PrintRequestMeta: true},
 			[]string{"GET https://example.com/", `request body`, "Req-H"},
 		},
 		{
@@ -76,8 +81,10 @@ func TestPrinter_Print(t *testing.T) {
 			PrinterConfig{
 				PrintRequestHeaders:  true,
 				PrintRequestBody:     true,
+				PrintRequestMeta:     true,
 				PrintResponseHeaders: true,
 				PrintResponseBody:    true,
+				PrintResponseMeta:    true,
 			},
 			[]string{
 				"GET https://example.com/ HTTP/1.1",
