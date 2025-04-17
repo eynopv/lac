@@ -17,8 +17,10 @@ var IsTerminal = term.IsTerminal
 type PrinterConfig struct {
 	PrintResponseBody    bool
 	PrintResponseHeaders bool
+	PrintResponseMeta    bool
 	PrintRequestBody     bool
 	PrintRequestHeaders  bool
+	PrintRequestMeta     bool
 }
 
 type Printer struct {
@@ -128,11 +130,20 @@ func (p *Printer) makeNonTerminalOutput(res *result.Result) string {
 
 func (p *Printer) printRequestHeaders(res *result.Result) string {
 	req := *res.Response.Request
-	return p.formatter.RequestLine(*res.RequestLine()) + p.formatter.Headers(req.Header)
+
+	if p.config.PrintRequestMeta {
+		return p.formatter.RequestLine(*res.RequestLine()) + p.formatter.Headers(req.Header)
+	}
+
+	return p.formatter.Headers(req.Header)
 }
 
 func (p *Printer) printResponseHeaders(res *result.Result) string {
-	return p.formatter.StatusLine(*res.StatusLine()) + p.formatter.Headers(res.Response.Header)
+	if p.config.PrintResponseMeta {
+		return p.formatter.StatusLine(*res.StatusLine()) + p.formatter.Headers(res.Response.Header)
+	}
+
+	return p.formatter.Headers(res.Response.Header)
 }
 
 func (p *Printer) printBody(body *result.Body) string {

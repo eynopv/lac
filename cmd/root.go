@@ -27,8 +27,22 @@ var (
 
 			ClientConfig.PrinterConfig.PrintResponseBody = strings.Contains(PrintParameters, "b")
 			ClientConfig.PrinterConfig.PrintResponseHeaders = strings.Contains(PrintParameters, "h")
+			ClientConfig.PrinterConfig.PrintResponseMeta = strings.Contains(PrintParameters, "m")
 			ClientConfig.PrinterConfig.PrintRequestBody = strings.Contains(PrintParameters, "B")
 			ClientConfig.PrinterConfig.PrintRequestHeaders = strings.Contains(PrintParameters, "H")
+			ClientConfig.PrinterConfig.PrintRequestMeta = strings.Contains(PrintParameters, "M")
+
+			if strings.Contains(PrintParameters, "r") {
+				ClientConfig.PrinterConfig.PrintResponseBody = true
+				ClientConfig.PrinterConfig.PrintResponseHeaders = true
+				ClientConfig.PrinterConfig.PrintResponseMeta = true
+			}
+
+			if strings.Contains(PrintParameters, "R") {
+				ClientConfig.PrinterConfig.PrintRequestBody = true
+				ClientConfig.PrinterConfig.PrintRequestHeaders = true
+				ClientConfig.PrinterConfig.PrintRequestMeta = true
+			}
 
 			if err := prepareVariables(); err != nil {
 				return err
@@ -67,8 +81,12 @@ func init() {
 		"what should be printed in output:\n"+
 			" b - response body\n"+
 			" h - response headers\n"+
+			" m - response meta\n"+
+			" r - response body, headers and meta\n"+
 			" B - request body\n"+
-			" H - request headers\n",
+			" H - request headers\n"+
+			" M - request meta\n"+
+			" R - request body, headers and meta\n",
 	)
 }
 
