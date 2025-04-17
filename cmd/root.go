@@ -67,8 +67,10 @@ func init() {
 		"what should be printed in output:\n"+
 			" b - response body\n"+
 			" h - response headers\n"+
+			" m - response meta\n"+
 			" B - request body\n"+
-			" H - request headers\n",
+			" H - request headers\n"+
+			" M - request meta\n"+
 	)
 }
 
