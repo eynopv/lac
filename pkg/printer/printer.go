@@ -1,15 +1,10 @@
 package printer
 
 import (
-	"encoding/json"
-	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"golang.org/x/term"
-
-	"github.com/eynopv/lac/pkg/result"
 )
 
 var IsTerminal = term.IsTerminal
@@ -30,16 +25,19 @@ type Printer struct {
 }
 
 func NewPrinter(config PrinterConfig) Printer {
-	formatter := Formatter{
-		colored: true,
-	}
+	/*
+		formatter := Formatter{
+			colored: true,
+		}
+	*/
 
 	return Printer{
 		config:      config,
 		destination: os.Stdout,
-		formatter:   formatter,
 	}
 }
+
+/*
 
 func (p *Printer) Print(res *result.Result) {
 	var output string
@@ -128,6 +126,7 @@ func (p *Printer) makeNonTerminalOutput(res *result.Result) string {
 	return string(b)
 }
 
+/*
 func (p *Printer) printRequestHeaders(res *result.Result) string {
 	req := *res.Response.Request
 
@@ -157,3 +156,4 @@ func (p *Printer) printBody(body *result.Body) string {
 
 	return ""
 }
+*/

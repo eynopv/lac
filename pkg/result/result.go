@@ -18,15 +18,15 @@ type Metadata struct {
 }
 
 type StatusLine struct {
-	Protocol string
-	Status   string
-	Time     time.Duration
+	Protocol string        `json:"protocol"`
+	Status   string        `json:"status"`
+	Time     time.Duration `json:"time"`
 }
 
 type RequestLine struct {
-	Protocol string
-	Url      string
-	Method   string
+	Protocol string `json:"protocol"`
+	Url      string `json:"url"`
+	Method   string `json:"method"`
 }
 
 type Body []byte
@@ -39,12 +39,24 @@ func (r Result) StatusLine() *StatusLine {
 	}
 }
 
+func (r Result) ResponseLine() *StatusLine {
+	return r.StatusLine()
+}
+
 func (r Result) RequestLine() *RequestLine {
 	return &RequestLine{
 		Protocol: r.Response.Request.Proto,
 		Url:      r.Response.Request.URL.String(),
 		Method:   r.Response.Request.Method,
 	}
+}
+
+func (b Body) Data() any {
+	if body := b.Json(); body != nil {
+		return body
+	}
+
+	return b.Text()
 }
 
 func (b Body) Json() map[string]any {

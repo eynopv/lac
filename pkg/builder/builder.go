@@ -58,3 +58,8 @@ func (b *Builder) BuildPrinter() *printer.Printer {
 	p := printer.NewPrinter(b.ClientConfig.PrinterConfig)
 	return &p
 }
+
+func (b *Builder) BuildOutputter() *printer.Outputter {
+	o := printer.NewOutputter(b.ClientConfig.PrinterConfig)
+	return o
+}

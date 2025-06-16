@@ -28,6 +28,9 @@ func runCommandFunction(bldr *builder.Builder) {
 		os.Exit(1)
 	}
 
-	prntr := bldr.BuildPrinter()
-	prntr.Print(result)
+	outputter := bldr.BuildOutputter()
+	if err := outputter.Write(result); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
