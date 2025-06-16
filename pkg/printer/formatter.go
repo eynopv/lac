@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sort"
@@ -11,24 +12,132 @@ import (
 	"github.com/eynopv/lac/pkg/result"
 )
 
-type Formatter struct {
-	colored bool
+type Formatter interface {
+	Format(res *result.Result) (string, error)
 }
 
-func (f Formatter) Headers(headers http.Header) string {
-	return formatHeaders(headers, f.colored)
+type JsonFormatter struct {
+	includes Includes
 }
 
-func (f Formatter) StatusLine(line result.StatusLine) string {
-	return formatStatusLine(line, f.colored)
+func (f *JsonFormatter) Format(res *result.Result) (string, error) {
+	m := map[string]any{}
+
+	if f.includes.RequestHeaders || f.includes.RequestBody || f.includes.RequestMeta {
+		rm := map[string]any{}
+
+		if f.includes.RequestMeta {
+			rm["meta"] = res.RequestLine()
+		}
+
+		if f.includes.RequestHeaders {
+			rm["headers"] = res.Response.Request.Header
+		}
+
+		if f.includes.RequestBody {
+			rm["body"] = res.RequestBody.Data()
+		}
+
+		m["request"] = rm
+	}
+
+	if f.includes.ResponseHeaders || f.includes.ResponseBody || f.includes.ResponseMeta {
+		rm := map[string]any{}
+
+		if f.includes.ResponseMeta {
+			rm["meta"] = res.StatusLine()
+		}
+
+		if f.includes.ResponseHeaders {
+			rm["headers"] = res.Response.Header
+		}
+
+		if f.includes.ResponseBody {
+			rm["body"] = res.ResponseBody.Data()
+		}
+
+		m["response"] = rm
+	}
+
+	b, err := json.MarshalIndent(m, "", "  ")
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
 }
 
-func (f Formatter) RequestLine(line result.RequestLine) string {
-	return formatRequestLine(line, f.colored)
+type PrettyFormatter struct {
+	includes Includes
 }
 
-func (f Formatter) Json(j map[string]any) string {
-	return formatJson(j, f.colored)
+func (f *PrettyFormatter) Format(res *result.Result) (string, error) {
+	sections := []string{}
+
+	if f.includes.RequestHeaders {
+		sections = append(sections, f.printRequestHeaders(res))
+	}
+
+	if f.includes.RequestBody {
+		sections = append(sections, f.printBody(&res.RequestBody))
+	}
+
+	if f.includes.ResponseHeaders {
+		sections = append(sections, f.printResponseHeaders(res))
+	}
+
+	if f.includes.ResponseBody {
+		sections = append(sections, f.printBody(&res.ResponseBody))
+	}
+
+	return strings.Join(sections, "\n"), nil
+}
+
+func (f *PrettyFormatter) printRequestHeaders(res *result.Result) string {
+	req := *res.Response.Request
+
+	if f.includes.RequestMeta {
+		return f.requestLine(*res.RequestLine()) + f.headers(req.Header)
+	}
+
+	return f.headers(req.Header)
+}
+
+func (f *PrettyFormatter) printResponseHeaders(res *result.Result) string {
+	if f.includes.ResponseMeta {
+		return f.statusLine(*res.StatusLine()) + f.headers(res.Response.Header)
+	}
+
+	return f.headers(res.Response.Header)
+}
+
+func (f *PrettyFormatter) printBody(body *result.Body) string {
+	if jsonBody := body.Json(); jsonBody != nil {
+		return fmt.Sprintf("%v\n", f.json(jsonBody))
+	}
+
+	if textBody := body.Text(); textBody != "" {
+		return fmt.Sprintf("%v\n", textBody)
+	}
+
+	return ""
+}
+
+func (f *PrettyFormatter) headers(headers http.Header) string {
+	return formatHeaders(headers, true)
+}
+
+func (f *PrettyFormatter) statusLine(line result.StatusLine) string {
+	return formatStatusLine(line, true)
+}
+
+func (f *PrettyFormatter) requestLine(line result.RequestLine) string {
+	return formatRequestLine(line, true)
+}
+
+func (f *PrettyFormatter) json(j map[string]any) string {
+	return formatJson(j, true)
 }
 
 func formatHeaders(headers http.Header, colorized bool) string {
