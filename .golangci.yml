@@ -1,13 +1,20 @@
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
+    - bodyclose
+    - canonicalheader
     - errcheck
+    - errchkjson
+    - errname
     - govet
     - ineffassign
     - unused
-    - bodyclose
-    - canonicalheader
-    - wsl
-    - errchkjson
-    - errname
+    - wsl_v5
+  settings:
+    wsl_v5:
+      disable:
+        - if
+formatters:
+  enable:
     - gofmt

@@ -1,16 +1,19 @@
 package template
 
-import "net/http"
+import (
+	"net/http"
+)
 
-type Schema struct {
+type Template struct {
 	Request Request `json:"request"`
 }
 
 type Request struct {
-	Method  Method            `json:"method"`
-	Url     string            `json:"url"`
-	Headers map[string]string `json:"headers"`
-	Body    Body              `json:"body"`
+	Method    Method            `json:"method"`
+	Url       string            `json:"url"`
+	Headers   map[string]string `json:"headers"`
+	Body      Body              `json:"body"`
+	Variables map[string]any    `json:"variables"`
 }
 
 type Method string
